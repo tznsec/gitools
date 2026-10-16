@@ -102,12 +102,11 @@ fn install() -> Result<(), String> {
     say("Gotowe.");
     println!();
     println!("  Program:  {}", target.display());
-    println!("  Autor:    {AUTHOR}");
     println!("  Wersja:   {VERSION}");
     println!("  Autor:    {AUTHOR}  ·  github.com/tznsec/gitools");
     println!();
 
-    launch(&target);
+    launch(&target)?;
 
     Ok(())
 }
@@ -255,12 +254,28 @@ fn write_uninstall_entry(program: &Path) -> Result<(), String> {
 ///
 /// Podłączamy mu puste strumienie: bez tego dziedziczy konsolę instalatora,
 /// a whoever go uruchomił z PowerShella czekałby, aż aplikacja się zamknie.
-fn launch(target: &Path) {
-    let _ = Command::new(target)
+/// `DETACHED_PROCESS` odcina go od konsoli instalatora, żeby nie zniknął
+/// razem z nią.
+fn launch(target: &Path) -> Result<(), String> {
+    let mut command = Command::new(target);
+    command
+        .current_dir(target.parent().unwrap_or(target))
         .stdin(std::process::Stdio::null())
         .stdout(std::process::Stdio::null())
-        .stderr(std::process::Stdio::null())
-        .spawn();
+        .stderr(std::process::Stdio::null());
+
+    #[cfg(target_os = "windows")]
+    {
+        use std::os::windows::process::CommandExt;
+        const DETACHED_PROCESS: u32 = 0x0000_0008;
+        const CREATE_NEW_PROCESS_GROUP: u32 = 0x0000_0200;
+        command.creation_flags(DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP);
+    }
+
+    command
+        .spawn()
+        .map(|_| ())
+        .map_err(|e| format!("nie udaje sie uruchomic programu: {e}"))
 }
 
 /// Wypisuje komunikat z prefiksem — instalator nie ma okna konsoli,
