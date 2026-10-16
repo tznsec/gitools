@@ -108,7 +108,7 @@ const navLinks = [
 ];
 
 const site = `<!doctype html>
-<html lang="pl">
+<html lang="pl" class="no-js">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -335,6 +335,8 @@ footer .lic{margin-top:8px;font:12.5px var(--mono)}
 </div>
 
 <div class="progress" aria-hidden="true"></div>
+<div class="hero-scrim" aria-hidden="true"></div>
+<div class="particles" aria-hidden="true"></div>
 <div class="cursor-glow" aria-hidden="true"></div>
 <div class="aurora"><i></i><i></i><i></i></div>
 
@@ -344,7 +346,7 @@ footer .lic{margin-top:8px;font:12.5px var(--mono)}
     <div class="nav__links">
 ${navLinks.map(([h, l]) => `      <a href="${h}">${l}</a>`).join('\n')}
     </div>
-    <a class="btn btn--primary btn--sm" href="downloads/gitools-setup-${VERSION}.exe">⬇ Pobierz</a>
+    <a class="btn btn--primary btn--sm magnet" data-magnet="14" href="downloads/gitools-setup-${VERSION}.exe">⬇ Pobierz</a>
   </div>
 </nav>
 
@@ -355,7 +357,7 @@ ${navLinks.map(([h, l]) => `      <a href="${h}">${l}</a>`).join('\n')}
   <p class="hero__by">Projekt open source autorstwa <a href="https://github.com/tznsec">tznsec</a> · wersja ${VERSION} · MIT</p>
 
   <div class="cta">
-    <a class="btn btn--primary" href="downloads/gitools-setup-${VERSION}.exe">⬇ Pobierz instalator</a>
+    <a class="btn btn--primary magnet" data-magnet="10" href="downloads/gitools-setup-${VERSION}.exe">⬇ Pobierz instalator</a>
     <a class="btn" href="https://github.com/tznsec/gitools/releases">Wszystkie wydania</a>
     <a class="btn btn--ghost" href="https://github.com/tznsec/gitools">Kod źródłowy</a>
   </div>
@@ -365,7 +367,6 @@ ${navLinks.map(([h, l]) => `      <a href="${h}">${l}</a>`).join('\n')}
     <div class="stat"><b data-count="${totalFiles}">0</b><span>plików w domyślnych wariantach</span></div>
     <div class="stat"><b data-count="${totalOptions}">0</b><span>opcji do przekonfigurowania</span></div>
     <div class="stat"><b data-count="${totalChoices}">0</b><span>list wyboru</span></div>
-    <div class="stat"><b data-count="2">0</b><span>języki interfejsu</span></div>
     <div class="stat"><b data-count="5">0</b><span>motywów interfejsu</span></div>
   </div>
 </header>
@@ -379,7 +380,7 @@ ${cards.concat(cards).map((c) => `    <span class="marquee__item">${c.icon} <b>$
 
 <section class="wrap reveal" id="moznosci">
   <p class="eyebrow reveal">Możliwości</p>
-  <h2 class="reveal">Robi całą robotę, nie tylko część</h2>
+  <h2 class="reveal scramble">Robi całą robotę, nie tylko część</h2>
   <p class="lead reveal">
     Plan powstaje osobno od zapisu, więc podgląd, <code style="font-family:var(--mono);font-size:.9em">--dry-run</code>
     i prawdziwe tworzenie plików idą tą samą drogą. Nie ma osobnej ścieżki kodu,
@@ -410,7 +411,7 @@ ${cards.concat(cards).map((c) => `    <span class="marquee__item">${c.icon} <b>$
 
 <section class="wrap reveal" id="szablony">
   <p class="eyebrow reveal">Szablony</p>
-  <h2 class="reveal">Co dokładnie dostajesz</h2>
+  <h2 class="reveal scramble">Co dokładnie dostajesz</h2>
   <p class="lead reveal">
     Liczby plików policzone są z prawdziwego planu wygenerowanego przez
     <code style="font-family:var(--mono);font-size:.9em">gitools init &lt;id&gt; --json --dry-run</code>,
@@ -423,7 +424,7 @@ ${templateCards}
 
 <section class="wrap reveal" id="zrzuty">
   <p class="eyebrow reveal">Wygląd</p>
-  <h2 class="reveal">Jedno okno, trzy zakładki</h2>
+  <h2 class="reveal scramble">Jedno okno, trzy zakładki</h2>
   <p class="lead reveal">Aplikacja to natywny okno WebView2 z interfejsem w jednym pliku HTML — bez Electrona i bez bundlera.</p>
 
   <div class="shots">
@@ -444,7 +445,7 @@ ${templateCards}
 
 <section class="wrap reveal" id="pobieranie">
   <p class="eyebrow reveal">Pobieranie</p>
-  <h2 class="reveal">Instalator albo wersja przenośna</h2>
+  <h2 class="reveal scramble">Instalator albo wersja przenośna</h2>
   <p class="lead reveal">
     Instalator to jeden plik <code style="font-family:var(--mono);font-size:.9em">.exe</code> napisany w Rust —
     rozpakowuje program, zakłada skrót w Menu Start i dodaje wpis na liście zainstalowanych aplikacji.
@@ -473,7 +474,7 @@ ${templateCards}
 
 <section class="wrap reveal" id="terminal">
   <p class="eyebrow reveal">Terminal</p>
-  <h2 class="reveal">Wszystko, co robi okno, robi też powłoka</h2>
+  <h2 class="reveal scramble">Wszystko, co robi okno, robi też powłoka</h2>
   <p class="lead reveal">Te same pliki, ten sam plan. Do skryptów i CI bez okienek.</p>
 
   <div class="code">
@@ -504,7 +505,7 @@ gitools github push tznsec/moj-projekt ./moj-projekt -m <span class="s">"Pierwsz
 
 <section class="wrap reveal" id="faq">
   <p class="eyebrow reveal">Pytania</p>
-  <h2 class="reveal">Co warto wiedzieć</h2>
+  <h2 class="reveal scramble">Co warto wiedzieć</h2>
   <div class="faq">
     <details class="reveal"><summary>Czy muszę się logować do konta?</summary>
       <p>Nie. Wszystko działa offline i bez konta. Token GitHub jest potrzebny dopiero wtedy, kiedy chcesz zakładać repozytoria i wysyłać projekty.</p></details>

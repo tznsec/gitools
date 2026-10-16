@@ -142,6 +142,23 @@
   will-change: opacity, transform;
 }
 
+/* Bez JavaScriptu (albo gdy się wywali) treść musi być widoczna.
+   `no-js` zdejmuje pierwszą rzecz w `motion.js`. */
+.no-js .reveal {
+  opacity: 1;
+  transform: none;
+}
+
+.no-js .splash {
+  display: none;
+}
+
+.no-js .cursor-glow,
+.no-js .particles,
+.no-js .progress {
+  display: none;
+}
+
 .reveal.is-in {
   opacity: 1;
   transform: none;
@@ -444,4 +461,206 @@ footer a:hover {
   .cursor-glow {
     display: none;
   }
+}
+
+/* ======================================================== scramble / glitch == */
+
+.scramble {
+  display: inline-block;
+}
+
+/* Podczas dekodowania litery migają — stąd cień w dwóch kolorach. */
+.scramble.is-working {
+  animation: glitch-jitter .28s steps(2, end) infinite;
+}
+
+@keyframes glitch-jitter {
+  0% { text-shadow: -1px 0 var(--c3); transform: translateX(-1px); }
+  50% { text-shadow: 1px 0 var(--c1); transform: translateX(1px); }
+  100% { text-shadow: none; transform: none; }
+}
+
+/* ============================================================== magnetyczne = */
+
+.magnet {
+  transform: translate3d(var(--mx, 0), var(--my, 0), 0);
+  transition: transform .18s cubic-bezier(.22, 1, .36, 1);
+}
+
+.magnet.is-stuck {
+  transition: transform .5s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+/* ================================================================ ripple ==== */
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(circle, rgba(255, 255, 255, .5), transparent 70%);
+  pointer-events: none;
+  animation: ripple-out .65s var(--ease) forwards;
+  z-index: 3;
+}
+
+@keyframes ripple-out {
+  to { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
+/* ============================================================== cząsteczki == */
+
+.particles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(196, 167, 255, .85), transparent 70%);
+  animation: rise linear infinite;
+}
+
+@keyframes rise {
+  from { transform: translateY(110vh) scale(.6); opacity: 0; }
+  15% { opacity: .7; }
+  85% { opacity: .5; }
+  to { transform: translateY(-12vh) scale(1.15); opacity: 0; }
+}
+
+/* ================================================== przyciemnianie hero ==== */
+
+/* Tło hero przykleja się do góry i przyciemnia się przy przewijaniu,
+   dzięki czemu treść wiersza zaczyna się na czytelnym tle. */
+.hero-scrim {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--bg);
+  opacity: 0;
+  transition: opacity .1s linear;
+}
+
+/* ============================================================ parallax hero == */
+
+.hero__logo {
+  will-change: transform;
+}
+
+/* ============================================================ ikona bounce == */
+
+.card__ico,
+.tpl__icon {
+  transition: transform .34s var(--ease-back);
+}
+
+.card:hover .card__ico,
+.tpl:hover .tpl__icon {
+  animation: icon-bounce .6s var(--ease-back);
+}
+
+@keyframes icon-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-7px) scale(1.12); }
+  65% { transform: translateY(2px) scale(.96); }
+}
+
+/* ==================================================== obramowanie gradient == */
+
+.dl__item {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Kolorowa obwódka przesuwająca się po krawędzi. */
+.dl__item::before {
+  content: '';
+  position: absolute;
+  inset: -60%;
+  background: conic-gradient(from 0deg, transparent 0deg, var(--c1) 70deg, var(--c2) 140deg, var(--c3) 210deg, transparent 300deg);
+  animation: spin-border 5s linear infinite;
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.dl__item::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: var(--bg);
+  transition: background .3s;
+}
+
+.dl__item:hover::before {
+  opacity: .75;
+}
+
+.dl__item > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes spin-border {
+  to { transform: rotate(1turn); }
+}
+
+/* ======================================================== podkreślenie nav == */
+
+.nav__links a {
+  position: relative;
+}
+
+.nav__links a::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 4px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--c1), var(--c3));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .28s var(--ease);
+}
+
+.nav__links a:hover::after,
+.nav__links a.is-active::after {
+  transform: scaleX(1);
+}
+
+/* ============================================================== stopka ===== */
+
+footer .lic b {
+  background: linear-gradient(100deg, var(--c1), var(--c3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ============================================================ glare (tilt) == */
+
+.tilt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    320px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, .1),
+    transparent 58%
+  );
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tilt:hover::after {
+  opacity: 1;
 }

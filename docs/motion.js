@@ -14,6 +14,10 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
+  // Zdejmujemy znak `no-js` pierwszą rzeczą — od tego momentu CSS może
+  // ukrywać treść oczekując na animację wejścia.
+  document.documentElement.classList.remove('no-js');
+
   // ------------------------------------------------------------- splash ----
 
   function splash() {
@@ -317,6 +321,213 @@
     }
   }
 
+  // ------------------------------------------------------- scramble tekstu ----
+
+  const GLYPHS = '!<>-_\\/[]{}—=+*^?#ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  /** Krótki efekt „dekodowania” tekstu — litery losowe, aż do właściwych. */
+  function scramble(element, text) {
+    const queue = [...text].map((char) => ({ char, from: Math.floor(Math.random() * 18) }));
+    const solid = new Set([' ', '/', '—', '-', '.']);
+    let frame = 0;
+
+    return new Promise((resolve) => {
+      const tick = () => {
+        let done = 0;
+        let output = '';
+
+        for (const item of queue) {
+          if (solid.has(item.char) || frame >= item.from + 2) {
+            output += item.char;
+            done += 1;
+          } else {
+            output += GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+          }
+        }
+
+        element.textContent = output;
+        frame += 1;
+
+        if (done === queue.length) resolve();
+        else requestAnimationFrame(tick);
+      };
+
+      requestAnimationFrame(tick);
+    });
+  }
+
+  function scrambleHeadings() {
+    const targets = $$('.scramble');
+    if (!targets.length || reduced || !('IntersectionObserver' in window)) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+
+          const element = entry.target;
+          const text = element.dataset.text ?? element.textContent;
+          element.dataset.text = text;
+          element.classList.add('is-working');
+
+          scramble(element, text).finally(() => element.classList.remove('is-working'));
+          io.unobserve(element);
+        }
+      },
+      { threshold: 0.6 },
+    );
+
+    targets.forEach((n) => io.observe(n));
+  }
+
+  // --------------------------------------------------- magnetyczne przyciski --
+
+  function magnet() {
+    if (reduced || !fine) return;
+
+    for (const button of $$('.magnet')) {
+      const strength = Number(button.dataset.magnet || 9);
+
+      button.addEventListener(
+        'pointermove',
+        (event) => {
+          const box = button.getBoundingClientRect();
+          const dx = (event.clientX - (box.left + box.width / 2)) * (strength / 100);
+          const dy = (event.clientY - (box.top + box.height / 2)) * (strength / 100);
+          button.style.setProperty('--mx', `${dx.toFixed(1)}px`);
+          button.style.setProperty('--my', `${dy.toFixed(1)}px`);
+        },
+        { passive: true },
+      );
+
+      button.addEventListener('pointerleave', () => {
+        button.classList.add('is-stuck');
+        button.style.setProperty('--mx', '0px');
+        button.style.setProperty('--my', '0px');
+        setTimeout(() => button.classList.remove('is-stuck'), 520);
+      });
+    }
+  }
+
+  // --------------------------------------------------------------- ripple ----
+
+  function ripple() {
+    if (reduced || !fine) return;
+
+    document.addEventListener(
+      'pointerdown',
+      (event) => {
+        const host = event.target.closest('.btn, .dl__item, .code, details, summary');
+        if (!host || getComputedStyle(host).position === 'static') return;
+        if (getComputedStyle(host).overflow === 'hidden' && !host.classList.contains('btn')) return;
+
+        const box = host.getBoundingClientRect();
+        const size = Math.max(box.width, box.height) * 2.2;
+
+        const dot = document.createElement('span');
+        dot.className = 'ripple';
+        dot.style.width = `${size}px`;
+        dot.style.height = `${size}px`;
+        dot.style.left = `${event.clientX - box.left}px`;
+        dot.style.top = `${event.clientY - box.top}px`;
+
+        host.append(dot);
+        setTimeout(() => dot.remove(), 680);
+      },
+      { passive: true },
+    );
+  }
+
+  // ----------------------------------------------------------- cząsteczki ----
+
+  function particles() {
+    if (reduced) return;
+
+    const layer = $('.particles');
+    if (!layer) return;
+
+    // Gęstość zależy od pola powierzchni — na dużym ekranie nie robimy 200 kół.
+    const count = Math.round(Math.min(46, (window.innerWidth * window.innerHeight) / 48000));
+
+    for (let i = 0; i < count; i += 1) {
+      const dot = document.createElement('span');
+      const size = 1.5 + Math.random() * 3.5;
+
+      dot.className = 'particle';
+      dot.style.width = `${size}px`;
+      dot.style.height = `${size}px`;
+      dot.style.left = `${Math.random() * 100}%`;
+      dot.style.top = `${Math.random() * 100}%`;
+      dot.style.animationDuration = `${16 + Math.random() * 22}s`;
+      dot.style.animationDelay = `${-Math.random() * 30}s`;
+      dot.style.opacity = String(0.2 + Math.random() * 0.5);
+
+      layer.append(dot);
+    }
+  }
+
+  // ------------------------------------------------- parallax i przyciemnienie --
+
+  function heroScroll() {
+    const hero = $('.hero');
+    const logo = $('.hero__logo');
+    const scrim = $('.hero-scrim');
+    if (!hero || !logo) return;
+
+    let ticking = false;
+
+    const update = () => {
+      const rect = hero.getBoundingClientRect();
+      const scrolled = Math.max(0, -rect.top);
+      const k = Math.min(scrolled / Math.max(rect.height, 1), 1);
+
+      logo.style.transform = `translate3d(0, ${(-k * 90).toFixed(1)}px, 0) scale(${(1 - k * 0.45).toFixed(3)})`;
+      logo.style.opacity = String(1 - k * 0.9);
+
+      if (scrim) scrim.style.opacity = String(Math.min(k * 1.15, 0.94));
+
+      ticking = false;
+    };
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true },
+    );
+
+    update();
+  }
+
+  // --------------------------------------------------------- aktywna zakładka --
+
+  function scrollSpy() {
+    const links = $$('.nav__links a');
+    const sections = links
+      .map((a) => document.querySelector(a.getAttribute('href')))
+      .filter(Boolean);
+
+    if (!sections.length || !('IntersectionObserver' in window)) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const id = `#${entry.target.id}`;
+          for (const link of links) {
+            link.classList.toggle('is-active', link.getAttribute('href') === id);
+          }
+        }
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+
+    sections.forEach((s) => io.observe(s));
+  }
+
   // ---------------------------------------------------------- start ----
 
   function start() {
@@ -330,6 +541,12 @@
     navbar();
     terminal();
     faq();
+    scrambleHeadings();
+    magnet();
+    ripple();
+    particles();
+    heroScroll();
+    scrollSpy();
   }
 
   if (document.readyState === 'loading') {
