@@ -1,0 +1,24 @@
+﻿[package]
+name = "gitools"
+description = "git + narzedzia - CLI i aplikacja okienkowa do generowania struktur plikow projektow"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default = ["gui"]
+gui = ["dep:tao", "dep:wry"]
+
+[dependencies]
+gitools-core = { path = "../gitools-core" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+clap = { version = "4.6", features = ["derive", "wrap_help"] }
+owo-colors = "4.4"
+tao = { version = "0.37", optional = true }
+wry = { version = "0.57", optional = true }
+
+[[bin]]
+name = "gitools"
+path = "src/main.rs"

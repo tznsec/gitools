@@ -1,0 +1,33 @@
+# Rust
+/target/
+**/target/
+Cargo.lock.bak
+
+# budowanie instalatora: `installer/build` to tylko miejsce, gdzie lezy
+# gotowy gitools.exe do osadzenia — nie jest zrodlem
+installer/build/
+dist/
+docs/.nojekyll
+
+# skompilowane artefakty
+*.pdb
+*.dll
+
+# .exe trzymamy tylko tam, gdzie ma byc: instalator i wersja przenosna
+# na GitHub Pages. Wszystkie inne .exe (np. w target/) i tak są pod /target.
+*.exe
+!docs/downloads/*.exe
+
+# ale archiwum w docs/downloads zostaje
+!docs/downloads/*.zip
+
+# edytory i system
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# logi
+*.log

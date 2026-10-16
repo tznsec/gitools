@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>gitools — generator struktur plików</title>
+    <style>
+      /*__STYLES__*/
+    </style>
+  </head>
+  <body>
+    <div class="aurora"><span></span><span></span><span></span></div>
+
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand__logo">
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="gitools">
+              <defs>
+                <linearGradient id="gt-bg" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#6d7cff" />
+                  <stop offset="48%" stop-color="#8b5cf6" />
+                  <stop offset="100%" stop-color="#e05bd0" />
+                </linearGradient>
+                <linearGradient id="gt-gloss" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#ffffff" stop-opacity=".34" />
+                  <stop offset="55%" stop-color="#ffffff" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+
+              <rect x="1" y="1" width="62" height="62" rx="18" fill="url(#gt-bg)" />
+              <rect x="1" y="1" width="62" height="62" rx="18" fill="url(#gt-gloss)" />
+              <rect x="1.75" y="1.75" width="60.5" height="60.5" rx="17.25" fill="none" stroke="#fff" stroke-opacity=".32" stroke-width="1.5" />
+
+              <!--
+                Klucz mechanika: glowka z otworem, cienki trzon, spodek z zebami.
+
+                UWAGA: obrys rysujemy dwoma warstwami dla CAEJ sylwetki, dzieki
+                czemu w miejscach styku nie ma szwow. Dla kapsulek (trzon, spodek,
+                zeby) wystarczy grubszy pedzel atramentem i waski biela na tej samej
+                osi. Glowka jest krazkiem, a nie odcinkiem, wiec musimy ja wypelnic -
+                pogrubiony pedzel narysowalby ja od srodka i wyszla by dwa razy za duza.
+              -->
+
+              <!-- obrys: glowka jako dysk powiekszony o grubosc obrysu -->
+              <circle cx="32" cy="18" r="10.2" fill="#14151d" />
+
+              <!-- obrys: kapsulki -->
+              <g fill="none" stroke="#14151d" stroke-linecap="round">
+                <path d="M32 24 L32 42" stroke-width="8.4" />
+                <path d="M21 46 L43 46" stroke-width="8" />
+                <path d="M24 46 L24 50" stroke-width="6.4" />
+                <path d="M32 46 L32 52.5" stroke-width="6.4" />
+                <path d="M40 46 L40 49.5" stroke-width="6.4" />
+              </g>
+
+              <!-- wypelnienie: glowka -->
+              <circle cx="32" cy="18" r="8.2" fill="#fff" />
+
+              <!-- wypelnienie: kapsulki -->
+              <g fill="none" stroke="#fff" stroke-linecap="round">
+                <path d="M32 24 L32 42" stroke-width="4.4" />
+                <path d="M21 46 L43 46" stroke-width="4" />
+                <path d="M24 46 L24 50" stroke-width="2.4" />
+                <path d="M32 46 L32 52.5" stroke-width="2.4" />
+                <path d="M40 46 L40 49.5" stroke-width="2.4" />
+              </g>
+
+              <!-- otwor w glowce: wracamy do gradientu tla -->
+              <circle cx="32" cy="18" r="3.5" fill="url(#gt-bg)" />
+            </svg>
+          </div>
+          <div class="brand__text">
+            <strong>gitools</strong>
+            <span id="version">…</span>
+            <span class="brand__by" data-i18n="app.by">projekt: tznsec</span>
+          </div>
+        </div>
+
+        <nav class="tabs" id="tabs" role="tablist">
+          <button class="tab is-on" type="button" role="tab" data-tab="templates">
+            <span class="tab__icon">🧩</span> <span data-i18n="tab.templates">Szablony</span>
+          </button>
+          <button class="tab" type="button" role="tab" data-tab="snapshots">
+            <span class="tab__icon">📸</span> <span data-i18n="tab.snapshots">Migawki</span>
+            <span class="tab__badge" id="snapBadge" hidden>0</span>
+          </button>
+          <button class="tab" type="button" role="tab" data-tab="github">
+            <span class="tab__icon">🐙</span> <span data-i18n="tab.github">GitHub</span>
+            <span class="tab__badge" id="ghBadge" hidden>●</span>
+          </button>
+        </nav>
+
+        <div class="panel is-on" id="panelTemplates" role="tabpanel">
+          <input id="search" class="search" type="search" data-i18n-placeholder="search.placeholder" placeholder="Szukaj szablonu…" autocomplete="off" />
+          <nav id="templates" class="templates"></nav>
+        </div>
+
+        <div class="panel" id="panelSnapshots" role="tabpanel" hidden>
+          <div class="snapActions">
+            <button id="snapFromPlan" class="btn btn--small btn--block" type="button">📸 <span data-i18n="snap.fromPlan">Z bieżącego planu</span></button>
+            <button id="snapFromDir" class="btn btn--small btn--block" type="button">📁 <span data-i18n="snap.fromDir">Z katalogu…</span></button>
+          </div>
+          <nav id="snapList" class="snapList"></nav>
+        </div>
+
+        <div class="panel" id="panelGithub" role="tabpanel" hidden>
+          <div class="snapActions">
+            <button id="ghRefreshSide" class="btn btn--small btn--block" type="button">🔄 <span data-i18n="gh.refresh">Odśwież</span></button>
+            <a id="ghOpenRepo" class="btn btn--small btn--block" target="_blank" rel="noreferrer" hidden>
+              <span data-i18n="gh.openRepo">Otwórz repozytorium</span> ↗
+            </a>
+          </div>
+          <div class="note" id="ghSideHint"></div>
+        </div>
+
+        <div class="gear">
+          <button id="openSettings" type="button"><span>⚙</span> <span data-i18n="nav.settings">Ustawienia</span></button>
+          <span class="gear__hint" id="gearHint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> — utwórz</span>
+        </div>
+      </aside>
+
+      <main class="main" id="main">
+        <div class="view is-on" id="viewTemplates">
+        <header class="hero">
+          <div class="hero__icon" id="heroIcon">📦</div>
+          <div class="hero__body">
+            <h1 id="heroTitle" data-i18n="hero.pick">Wybierz szablon</h1>
+            <p id="heroDesc"></p>
+            <div class="tags" id="heroTags"></div>
+          </div>
+        </header>
+
+        <section class="card" style="--i: 1">
+          <div class="card__head">
+            <h2 data-i18n="section.target">Katalog docelowy</h2>
+            <span class="hint" id="rootHint"></span>
+          </div>
+
+          <div class="row">
+            <input id="root" class="input input--path" type="text" spellcheck="false" placeholder="C:\Users\ty\projekty\moj-projekt" />
+            <button id="browse" class="btn" type="button">Przeglądaj…</button>
+          </div>
+
+          <div class="flags">
+            <label class="check">
+              <input type="checkbox" id="git" checked />
+              <span data-i18n="flag.git">git init (gałąź main)</span>
+            </label>
+            <label class="check">
+              <input type="checkbox" id="force" />
+              <span data-i18n="flag.force">nadpisz istniejące pliki</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="card" style="--i: 2">
+          <div class="card__head">
+            <h2 data-i18n="section.project">Dane projektu</h2>
+          </div>
+
+          <div class="grid">
+            <label class="field">
+              <span data-i18n="field.name">Nazwa projektu</span>
+              <input id="pname" class="input" type="text" placeholder="Mój Projekt" />
+            </label>
+            <label class="field">
+              <span data-i18n="field.author">Autor</span>
+              <input id="pauthor" class="input" type="text" placeholder="Jan Kowalski" />
+            </label>
+          </div>
+
+          <label class="field">
+            <span data-i18n="field.description">Opis</span>
+            <input id="pdesc" class="input" type="text" placeholder="Krótki opis projektu (idzie do README i manifestów)" />
+          </label>
+
+          <div class="derived" id="derived"></div>
+        </section>
+
+        <section class="card" style="--i: 3">
+          <div class="card__head">
+            <h2 data-i18n="section.options">Opcje szablonu</h2>
+          </div>
+          <div id="options" class="options"></div>
+        </section>
+
+        <section class="card" style="--i: 4">
+          <div class="card__head">
+            <h2 data-i18n="section.preview">Podgląd struktury</h2>
+            <span class="hint" id="counts"></span>
+          </div>
+
+          <div class="preview">
+            <div id="tree" class="tree"></div>
+            <div class="content">
+              <div id="contentHead" class="content__head" data-i18n="content.hint">Kliknij plik, aby zobaczyć zawartość</div>
+              <pre id="content" class="content__body"></pre>
+            </div>
+          </div>
+        </section>
+        </div>
+
+        <!-- Zakładka: migawki -->
+        <div class="view" id="viewSnapshots" hidden>
+          <header class="hero hero--compact">
+            <div class="hero__icon">📸</div>
+            <div class="hero__body">
+              <h1>Migawki</h1>
+              <p>Zapisane kopie wygenerowanych projektów. Możesz je otworzyć, przywrócić albo usunąć.</p>
+              <div class="tags" id="snapTags"></div>
+            </div>
+          </header>
+
+          <section class="card" style="--i: 1">
+            <div class="card__head">
+              <h2>Nowa migawka</h2>
+              <span class="hint">kopia plików projektu</span>
+            </div>
+            <div class="row">
+              <button id="snapNewPlan" class="btn btn--primary" type="button">📸 <span data-i18n="snap.fromPlan">Z bieżącego planu</span></button>
+              <button id="snapNewDir" class="btn" type="button">📁 <span data-i18n="snap.fromDir">Z katalogu…</span></button>
+              <input id="snapName" class="input" type="text" placeholder="nazwa migawki (opcjonalnie)" />
+            </div>
+            <div class="hint hint--block" id="snapSource">Źródło: wybrany szablon i katalog docelowy z zakładki „Szablony”.</div>
+          </section>
+
+          <section class="card" style="--i: 2">
+            <div class="card__head">
+              <h2>Zapisane migawki</h2>
+              <span class="hint" id="snapCounts"></span>
+            </div>
+            <div class="row row--end">
+              <input id="snapSearch" class="input input--small" type="search" placeholder="szukaj migawki…" autocomplete="off" />
+              <button id="snapRefresh" class="btn btn--small" type="button">Odśwież</button>
+            </div>
+            <div id="snapGrid" class="snapGrid"></div>
+          </section>
+
+          <section class="card" style="--i: 3">
+            <div class="card__head">
+              <h2>Migawki automatyczne</h2>
+              <span class="hint">zapis po każdym utworzeniu projektu</span>
+            </div>
+            <div class="opt">
+              <div>
+                <div class="opt__label">Twórz automatycznie</div>
+                <div class="opt__help">Po każdym „Utwórz strukturę” zapisuje się migawka projektu.</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="snapAuto" />
+                <span class="switch__track"></span>
+              </label>
+            </div>
+            <div class="opt">
+              <div>
+                <div class="opt__label">Zachowuj ostatnie</div>
+                <div class="opt__help">Najstarsze migawki są usuwane, gdy limit zostanie przekroczony (0 = bez limitu).</div>
+              </div>
+              <div class="range">
+                <input id="snapKeep" type="range" min="0" max="200" step="5" />
+                <span class="range__value" id="snapKeepValue">20</span>
+              </div>
+            </div>
+            <div class="row row--end">
+              <span class="hint" id="snapDirHint"></span>
+              <button id="snapOpenDir" class="btn btn--small" type="button">Otwórz katalog migawek</button>
+              <button id="snapClear" class="btn btn--small btn--danger" type="button">Usuń wszystkie</button>
+            </div>
+          </section>
+        </div>
+
+        <!-- Zakładka: GitHub -->
+        <div class="view" id="viewGithub" hidden>
+          <header class="hero hero--compact">
+            <div class="hero__icon">🐙</div>
+            <div class="hero__body">
+              <h1 data-i18n="gh.title">GitHub</h1>
+              <p data-i18n="gh.intro">Zaloguj się tokenem dostępu, załóż repozytorium i wrzuć wygenerowany projekt jednym commitem.</p>
+              <div class="tags" id="ghTags"></div>
+            </div>
+          </header>
+
+          <section class="card" style="--i: 1">
+            <div class="card__head">
+              <h2 data-i18n="gh.loginTitle">Logowanie</h2>
+              <span class="hint" id="ghCredsHint"></span>
+            </div>
+
+            <div id="ghSignedOut">
+              <label class="field">
+                <span data-i18n="gh.tokenLabel">Token dostępu (Personal Access Token)</span>
+                <input id="ghToken" class="input" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…" />
+              </label>
+
+              <div class="flags">
+                <label class="check">
+                  <input type="checkbox" id="ghShowToken" />
+                  <span data-i18n="gh.showToken">Pokaż token</span>
+                </label>
+              </div>
+
+              <div class="note" data-i18n="gh.tokenHelp">
+                Token tworzysz na GitHubie: Settings → Developer settings → Personal access tokens → Fine-grained.
+                Wystarczą uprawnienia „Contents: read and write” oraz „Administration: read and write” (to drugie tylko do zakładania repozytoriów).
+                Token zapisujemy lokalnie i wysyłamy wyłącznie na api.github.com.
+              </div>
+
+              <div class="row">
+                <button id="ghLogin" class="btn btn--primary" type="button">🔑 <span data-i18n="gh.login">Zaloguj</span></button>
+                <button id="ghTokenPage" class="btn btn--ghost" type="button" data-i18n="gh.tokenPage">Ustawienia GitHuba</button>
+              </div>
+            </div>
+
+            <div id="ghSignedIn" hidden>
+              <div class="ghUser">
+                <img id="ghAvatar" class="ghUser__avatar" alt="" />
+                <div class="ghUser__body">
+                  <div class="ghUser__name" id="ghLoginName"></div>
+                  <div class="hint" id="ghLoginLink"></div>
+                </div>
+                <button id="ghLogout" class="btn btn--small btn--ghost" type="button" data-i18n="gh.logout">Wyloguj</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="card" style="--i: 2">
+            <div class="card__head">
+              <h2 data-i18n="gh.createTitle">Nowe repozytorium</h2>
+            </div>
+
+            <div class="grid">
+              <label class="field">
+                <span data-i18n="gh.repoName">Nazwa</span>
+                <input id="ghRepoName" class="input" type="text" placeholder="moj-projekt" />
+              </label>
+              <label class="field">
+                <span data-i18n="gh.visibility">Widoczność</span>
+                <select id="ghRepoPrivate" class="input">
+                  <option value="1" data-i18n="gh.private">Prywatne</option>
+                  <option value="0" data-i18n="gh.public">Publiczne</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span data-i18n="gh.repoDesc">Opis</span>
+              <input id="ghRepoDesc" class="input" type="text" placeholder="Krótki opis repozytorium" />
+            </label>
+
+            <div class="row row--end">
+              <button id="ghCreate" class="btn btn--primary" type="button">➕ <span data-i18n="gh.create">Utwórz repozytorium</span></button>
+            </div>
+          </section>
+
+          <section class="card" style="--i: 3">
+            <div class="card__head">
+              <h2 data-i18n="gh.pushTitle">Wyślij projekt</h2>
+              <span class="hint" id="ghRepoHint"></span>
+            </div>
+
+            <div class="grid">
+              <label class="field">
+                <span data-i18n="gh.repo">Repozytorium</span>
+                <select id="ghRepo" class="input"></select>
+              </label>
+              <label class="field">
+                <span data-i18n="gh.branch">Gałąź</span>
+                <input id="ghBranch" class="input" type="text" value="main" />
+              </label>
+            </div>
+
+            <label class="field">
+              <span data-i18n="gh.dir">Katalog projektu</span>
+              <div class="row">
+                <input id="ghDir" class="input input--path" type="text" spellcheck="false" placeholder="C:\Users\ty\projekty\moj-projekt" />
+                <button id="ghBrowse" class="btn" type="button" data-i18n="gh.browse">Przeglądaj…</button>
+              </div>
+            </label>
+
+            <label class="field">
+              <span data-i18n="gh.message">Komunikat commita</span>
+              <input id="ghMessage" class="input" type="text" placeholder="Pierwszy commit" />
+            </label>
+
+            <div class="note" data-i18n="gh.skipHelp">
+              Pomijamy katalogi .git, node_modules, target, dist, build i .dart_tool. Pliki binarne i większe niż 100 KiB
+              idą osobnym żądaniem; powyżej 8 MiB w ogóle nie trafiają do commita.
+            </div>
+
+            <div class="row row--end">
+              <button id="ghPush" class="btn btn--primary" type="button">⬆️ <span data-i18n="gh.push">Wyślij na GitHub</span></button>
+            </div>
+
+            <div id="ghResult" class="ghResult"></div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="actionbar" id="barTemplates">
+        <div class="actionbar__info">
+          <div id="summary">—</div>
+          <div id="problem" class="problem"></div>
+        </div>
+
+        <div class="actionbar__buttons">
+          <div id="progress" class="progress"></div>
+          <button id="openFolder" class="btn btn--ghost" type="button" data-i18n="action.openFolder">Otwórz folder</button>
+          <button id="create" class="btn btn--primary" type="button" data-i18n="action.create">Utwórz strukturę</button>
+        </div>
+      </footer>
+
+      <footer class="actionbar" id="barSnapshots" hidden>
+        <div class="actionbar__info">
+          <div id="snapSummary">—</div>
+          <div id="snapProblem" class="problem"></div>
+        </div>
+
+        <div class="actionbar__buttons">
+          <button id="snapRestoreLast" class="btn btn--ghost" type="button">Przywróć ostatnią</button>
+          <button id="snapMakePlan" class="btn btn--primary" type="button">Migawka z planu</button>
+        </div>
+      </footer>
+
+      <footer class="actionbar" id="barGithub" hidden>
+        <div class="actionbar__info">
+          <div id="ghSummary">—</div>
+          <div id="ghProblem" class="problem"></div>
+        </div>
+
+        <div class="actionbar__buttons">
+          <button id="ghLogoutBottom" class="btn btn--ghost" type="button" data-i18n="gh.logout">Wyloguj</button>
+          <button id="ghPushBottom" class="btn btn--primary" type="button">⬆️ <span data-i18n="gh.push">Wyślij na GitHub</span></button>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Wybór katalogu -->
+    <div class="modal" id="picker" hidden>
+      <div class="modal__backdrop" data-close="1"></div>
+      <div class="modal__box">
+        <header class="modal__head">
+          <h3 data-i18n="picker.title">Wybierz katalog</h3>
+          <button class="icon-btn" type="button" data-close="1" aria-label="Zamknij">✕</button>
+        </header>
+
+        <div class="picker">
+          <aside class="picker__side">
+            <div class="picker__label" data-i18n="picker.shortcuts">Skróty</div>
+            <div id="shortcuts" class="picker__list"></div>
+          </aside>
+
+          <div class="picker__main">
+            <div class="picker__path">
+              <button id="up" class="btn btn--tiny" type="button">↑</button>
+              <span id="currentPath" class="picker__current"></span>
+            </div>
+
+            <div id="dirs" class="picker__dirs"></div>
+
+            <div class="picker__new">
+              <input id="newDirName" class="input input--small" type="text" data-i18n-placeholder="picker.newDir" placeholder="nazwa nowego katalogu" />
+              <button id="createDir" class="btn btn--small" type="button" data-i18n="picker.create">Utwórz</button>
+            </div>
+          </div>
+        </div>
+
+        <footer class="modal__foot">
+          <button class="btn btn--ghost" type="button" data-close="1">Anuluj</button>
+          <button id="pickCurrent" class="btn btn--primary" type="button" data-i18n="picker.pick">Wybierz ten katalog</button>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Podgląd migawki -->
+    <div class="modal" id="snapModal" hidden>
+      <div class="modal__backdrop" data-close="1"></div>
+      <div class="modal__box modal__box--wide">
+        <header class="modal__head">
+          <h3 id="snapModalTitle" data-i18n="snap.modalTitle">Migawka</h3>
+          <button class="icon-btn" type="button" data-close="1" aria-label="Zamknij">✕</button>
+        </header>
+
+        <div class="snapMeta" id="snapMeta"></div>
+
+        <div class="preview preview--modal">
+          <div id="snapTree" class="tree"></div>
+          <div class="content">
+            <div id="snapContentHead" class="content__head" data-i18n="content.hint">Kliknij plik, aby zobaczyć zawartość</div>
+            <pre id="snapContent" class="content__body"></pre>
+          </div>
+        </div>
+
+        <footer class="modal__foot">
+          <input id="snapRestorePath" class="input input--small" type="text" spellcheck="false" data-i18n-placeholder="snap.restorePath" placeholder="katalog przywracania" />
+          <button id="snapRestore" class="btn btn--ghost" type="button" data-i18n="snap.restoreHere">Przywróć tutaj</button>
+          <button class="btn btn--primary" type="button" data-close="1">Zamknij</button>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Wybór pliku JSON (import szablonu) -->
+    <div class="modal" id="filePicker" hidden>
+      <div class="modal__backdrop" data-close="1"></div>
+      <div class="modal__box">
+        <header class="modal__head">
+          <h3 data-i18n="filePicker.title">Wybierz plik szablonu (.json)</h3>
+          <button class="icon-btn" type="button" data-close="1" aria-label="Zamknij">✕</button>
+        </header>
+
+        <div class="picker">
+          <aside class="picker__side">
+            <div class="picker__label" data-i18n="picker.shortcuts">Skróty</div>
+            <div id="fileShortcuts" class="picker__list"></div>
+          </aside>
+
+          <div class="picker__main">
+            <div class="picker__path">
+              <button id="fileUp" class="btn btn--tiny" type="button">↑</button>
+              <span id="fileCurrentPath" class="picker__current"></span>
+            </div>
+
+            <div id="fileDirs" class="picker__dirs"></div>
+
+            <div class="picker__label" style="margin-top: 10px" data-i18n="filePicker.files">Pliki JSON</div>
+            <div id="fileItems" class="picker__dirs picker__dirs--files"></div>
+          </div>
+        </div>
+
+        <footer class="modal__foot">
+          <button class="btn btn--ghost" type="button" data-close="1">Anuluj</button>
+          <button id="filePickCurrent" class="btn btn--small" type="button" data-i18n="filePicker.paste">Wklej zawartość zamiast</button>
+        </footer>
+      </div>
+    </div>
+
+    <div class="toasts" id="toasts"></div>
+
+    <!-- Ustawienia wyglądu -->
+    <div class="modal" id="settings" hidden>
+      <div class="modal__backdrop" data-close="1"></div>
+      <div class="modal__box">
+        <header class="modal__head">
+          <h3 data-i18n="settings.title">Ustawienia wyglądu</h3>
+          <button class="icon-btn" type="button" data-close="1" aria-label="Zamknij">✕</button>
+        </header>
+
+        <div class="settingsScroll" id="settingsScroll">
+          <nav class="acc">
+            <button class="acc__head" type="button" data-acc="appearance">
+              <span class="acc__icon">🎨</span>
+              <span class="acc__title" data-i18n="settings.secAppearance">Wygląd i kolory</span>
+              <span class="acc__hint" id="accHintAppearance">Szkło</span>
+              <span class="acc__chev">▾</span>
+            </button>
+            <div class="acc__body" data-acc-body="appearance">
+              <div class="settings">
+          <div class="setting">
+            <div>
+              <div class="setting__label" data-i18n="settings.accent">Kolor akcentu</div>
+              <div class="setting__help" data-i18n="settings.accentHelp">Gradient przycisków, plików i podświetleń.</div>
+            </div>
+            <div class="setting__control">
+              <div class="swatches" id="swatches"></div>
+              <input id="customColor" class="color-input" type="color" title="Własny kolor" />
+            </div>
+          </div>
+
+          <div class="setting">
+            <div>
+              <div class="setting__label">Wygląd</div>
+              <div class="setting__help">Szkło z poświatami, matowy, jasny lub dwa tryby kreskówkowe.</div>
+            </div>
+            <div class="setting__control">
+              <div class="segment segment--wrap" id="lookSegment">
+                <button type="button" data-value="glass"data-i18n="look.glass">Szkło</button>
+                <button type="button" data-value="dark" data-i18n="look.dark">Ciemny</button>
+                <button type="button" data-value="light" data-i18n="look.light">Jasny</button>
+                <button type="button" data-value="sketch-dark" data-i18n="look.sketch-dark">Kresk. ciemny</button>
+                <button type="button" data-value="sketch-light" data-i18n="look.sketch-light">Kresk. jasny</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div>
+              <div class="setting__label" data-i18n="settings.aurora">Zorza w tle</div>
+              <div class="setting__help" data-i18n="settings.auroraHelp">Jasność kolorowych poświat (tryby szkło, ciemny, jasny).</div>
+            </div>
+            <div class="setting__control">
+              <div class="range">
+                <input id="auroraRange" type="range" min="0" max="150" step="5" />
+                <span class="range__value" id="auroraValue">100%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div>
+              <div class="setting__label" data-i18n="settings.blur">Efekt szkła</div>
+              <div class="setting__help" data-i18n="settings.blurHelp">Rozmycie tła pod kartami i oknami.</div>
+            </div>
+            <div class="setting__control">
+              <div class="range">
+                <input id="blurRange" type="range" min="0" max="40" step="2" />
+                <span class="range__value" id="blurValue">22 px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div>
+              <div class="setting__label" data-i18n="settings.motion">Animacje</div>
+              <div class="setting__help" data-i18n="settings.motionHelp">Ruch poświat, wejścia kart i mikro-efekty.</div>
+            </div>
+            <div class="setting__control">
+              <label class="switch">
+                <input type="checkbox" id="motionToggle" checked />
+                <span class="switch__track"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div>
+              <div class="setting__label" data-i18n="settings.density">Gęstość interfejsu</div>
+              <div class="setting__help" data-i18n="settings.densityHelp">Więcej treści na ekranie albo więcej powietrza.</div>
+            </div>
+            <div class="setting__control">
+              <div class="segment" id="densitySegment">
+                <button type="button" data-value="normal" data-i18n="density.normal">Normalna</button>
+                <button type="button" data-value="compact" data-i18n="density.compact">Kompaktowa</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div>
+              <div class="setting__label" data-i18n="settings.lang">Język</div>
+              <div class="setting__help" data-i18n="settings.langHelp">Język interfejsu. Zmiana działa natychmiast.</div>
+            </div>
+            <div class="setting__control">
+              <div class="segment" id="langSegment"></div>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div>
+              <div class="setting__label" data-i18n="settings.reset">Przywróć domyślne</div>
+              <div class="setting__help" data-i18n="settings.resetHelp">Wyczyść zapisane ustawienia wyglądu.</div>
+            </div>
+            <div class="setting__control">
+              <button id="resetSettings" class="btn btn--small" type="button" data-i18n="settings.resetBtn">Resetuj</button>
+            </div>
+          </div>
+              </div>
+            </div>
+          </nav>
+
+          <nav class="acc">
+            <button class="acc__head" type="button" data-acc="snapshots">
+              <span class="acc__icon">📸</span>
+              <span class="acc__title" data-i18n="settings.secSnapshots">Migawki</span>
+              <span class="acc__hint" id="accHintSnapshots">automatyczne</span>
+              <span class="acc__chev">▾</span>
+            </button>
+            <div class="acc__body" data-acc-body="snapshots">
+              <div class="settings">
+          <div class="setting">
+            <div>
+              <div class="setting__label" data-i18n="snap.autoLabel">Migawki automatyczne</div>
+              <div class="setting__help" data-i18n="snap.autoHelp">Migawka powstaje sama po każdym utworzeniu projektu.</div>
+            </div>
+            <div class="setting__control">
+              <label class="switch">
+                <input type="checkbox" id="setSnapAuto" />
+                <span class="switch__track"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting">
+            <div>
+              <div class="setting__label" data-i18n="snap.keepLabel">Limit migawek</div>
+              <div class="setting__help" data-i18n="snap.keepHelp">Ile najnowszych migawek zachować (0 = wszystkie).</div>
+            </div>
+            <div class="setting__control">
+              <div class="range">
+                <input id="setSnapKeep" type="range" min="0" max="200" step="5" />
+                <span class="range__value" id="setSnapKeepValue">20</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting setting--stack">
+            <div>
+              <div class="setting__label" data-i18n="snap.dirLabel">Katalog migawek</div>
+              <div class="setting__help" id="setSnapDir">—</div>
+            </div>
+            <div class="setting__control setting__control--row">
+              <button id="setSnapOpen" class="btn btn--small" type="button" data-i18n="snap.openDir">Otwórz katalog</button>
+              <button id="setSnapClear" class="btn btn--small btn--danger" type="button" data-i18n="snap.clear">Usuń wszystkie migawki</button>
+            </div>
+          </div>
+              </div>
+            </div>
+          </nav>
+
+          <nav class="acc">
+            <button class="acc__head" type="button" data-acc="templates">
+              <span class="acc__icon">🧩</span>
+              <span class="acc__title" data-i18n="settings.secTemplates">Własne szablony (JSON)</span>
+              <span class="acc__hint" id="accHintTemplates">dodaj własny</span>
+              <span class="acc__chev">▾</span>
+            </button>
+            <div class="acc__body" data-acc-body="templates">
+              <div class="settings">
+          <div class="setting setting--stack">
+            <div>
+              <div class="setting__label" data-i18n="tpl.addLabel">Dodaj szablon z pliku JSON</div>
+              <div class="setting__help">
+                Wklej definicję szablonu albo wskaż plik <code>.json</code>. Szablon trafi na listę i będzie dostępny
+                również w CLI.
+              </div>
+            </div>
+
+            <textarea
+              id="tplJson"
+              class="input input--area"
+              rows="8"
+              spellcheck="false"
+              placeholder='{ "id": "moj-szablon", "name": "Mój szablon", "files": [ ... ] }'
+            ></textarea>
+
+            <div class="setting__control setting__control--row">
+              <button id="tplAdd" class="btn btn--small btn--primary" type="button" data-i18n="tpl.add">Dodaj szablon</button>
+              <button id="tplFromFile" class="btn btn--small" type="button" data-i18n="tpl.fromFile">Wczytaj z pliku…</button>
+              <button id="tplExample" class="btn btn--small btn--ghost" type="button" data-i18n="tpl.example">Wstaw przykład</button>
+              <button id="tplClear" class="btn btn--small btn--ghost" type="button" data-i18n="tpl.clear">Wyczyść</button>
+            </div>
+
+            <div class="tplList" id="tplList"></div>
+          </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+
+        <footer class="modal__foot">
+          <span class="setting__help" style="margin: 0" data-i18n="settings.footer">Ustawienia zapisywane są lokalnie w tej aplikacji.</span>
+          <button class="btn btn--primary" type="button" data-close="1" data-i18n="settings.done">Gotowe</button>
+        </footer>
+      </div>
+    </div>
+
+    <div class="fatal" id="fatal" hidden></div>
+
+    <script>
+      /*__I18N__*/
+    </script>
+    <script>
+      /*__SCRIPT__*/
+    </script>
+  </body>
+</html>

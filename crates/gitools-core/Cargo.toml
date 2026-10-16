@@ -1,0 +1,16 @@
+﻿[package]
+name = "gitools-core"
+description = "Silnik generowania struktur plikow - definicje szablonow, migawki i generator"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+ureq = { version = "2", default-features = false, features = ["tls", "gzip", "json"] }
+
+[lib]
+name = "gitools_core"
+path = "src/lib.rs"

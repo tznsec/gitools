@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>gitools — generator struktur plików</title>
+    <meta
+      name="description"
+      content="gitools — generator struktur plików. Szablony projektów, migawki, własne szablony JSON i wysyłka na GitHub. Projekt open source autorstwa tznsec."
+    />
+
+    <link rel="icon" href="logo.svg" type="image/svg+xml" />
+
+    <style>
+      :root {
+        --c1: #6d7cff;
+        --c2: #8b5cf6;
+        --c3: #e05bd0;
+        --text: #eef0fa;
+        --muted: #9aa2bb;
+        --muted-2: #6f7791;
+        --line: rgba(255, 255, 255, 0.1);
+        --glass: rgba(255, 255, 255, 0.05);
+        --radius: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        font: 16px/1.65 "Segoe UI", system-ui, -apple-system, sans-serif;
+        background:
+          radial-gradient(1100px 620px at 12% -10%, rgba(109, 124, 255, 0.28), transparent 60%),
+          radial-gradient(900px 520px at 88% 0%, rgba(224, 91, 208, 0.22), transparent 62%),
+          radial-gradient(800px 600px at 50% 110%, rgba(139, 92, 246, 0.2), transparent 60%),
+          #0b0c12;
+        min-height: 100vh;
+      }
+
+      .wrap {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      header.hero {
+        padding: 88px 0 56px;
+        text-align: center;
+      }
+
+      header.hero img {
+        width: 104px;
+        height: 104px;
+        border-radius: 24px;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+      }
+
+      h1 {
+        font-size: clamp(38px, 7vw, 64px);
+        letter-spacing: -0.03em;
+        margin: 22px 0 6px;
+        background: linear-gradient(100deg, var(--c1), var(--c2) 45%, var(--c3));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .tagline {
+        font-size: clamp(17px, 2.4vw, 22px);
+        color: var(--muted);
+        margin: 0 0 18px;
+      }
+
+      .by {
+        color: var(--muted-2);
+        font-size: 14px;
+        margin: 0 0 30px;
+      }
+
+      .by a {
+        color: var(--muted);
+      }
+
+      .cta {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 12px 24px;
+        border-radius: 11px;
+        text-decoration: none;
+        font-weight: 600;
+        border: 1px solid var(--line);
+        background: var(--glass);
+        color: var(--text);
+        transition: transform 0.16s ease, border-color 0.16s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.28);
+      }
+
+      .btn--primary {
+        background: linear-gradient(100deg, var(--c1), var(--c2) 50%, var(--c3));
+        border-color: transparent;
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.35);
+      }
+
+      section {
+        padding: 34px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      h2 {
+        font-size: 25px;
+        letter-spacing: -0.015em;
+        margin: 0 0 8px;
+      }
+
+      .lead {
+        color: var(--muted);
+        margin: 0 0 22px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(238px, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        padding: 18px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        background: var(--glass);
+      }
+
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 16.5px;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14.5px;
+      }
+
+      pre {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px 18px;
+        overflow-x: auto;
+        font: 13.5px/1.6 "Cascadia Code", Consolas, ui-monospace, monospace;
+        color: #d8dcf0;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .chips li {
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--glass);
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+
+      .downloads {
+        display: grid;
+        gap: 12px;
+      }
+
+      .download {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding: 16px 18px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        background: var(--glass);
+      }
+
+      .download b {
+        display: block;
+        font-size: 16px;
+      }
+
+      .download small {
+        color: var(--muted-2);
+      }
+
+      footer {
+        padding: 34px 0 56px;
+        border-top: 1px solid var(--line);
+        color: var(--muted-2);
+        font-size: 14px;
+        text-align: center;
+      }
+
+      footer a {
+        color: var(--muted);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <header class="hero">
+        <img src="logo.svg" alt="gitools" />
+        <h1>gitools</h1>
+        <p class="tagline">Generator struktur plików — od szablonu do repozytorium.</p>
+        <p class="by">
+          Projekt open source autorstwa <a href="https://github.com/tznsec">tznsec</a> · MIT
+        </p>
+
+        <div class="cta">
+          <a class="btn btn--primary" href="downloads/gitools-setup-0.2.0.exe">⬇ Pobierz instalator</a>
+          <a class="btn" href="https://github.com/tznsec/gitools/releases">Wszystkie wydania</a>
+          <a class="btn" href="https://github.com/tznsec/gitools">Kod źródłowy</a>
+        </div>
+      </header>
+
+      <section>
+        <h2>Co potrafi</h2>
+        <p class="lead">
+          Jedno polecenie tworzy kompletną strukturę projektu — razem z manifestami, testami,
+          plikiem README i historią git.
+        </p>
+
+        <div class="grid">
+          <div class="card">
+            <h3>🧩 13 szablonów</h3>
+            <p>Rust, Node.js, React, Vue, Svelte, Astro, .NET, Flutter, Python, Go i inne.</p>
+          </div>
+          <div class="card">
+            <h3>📸 Migawki</h3>
+            <p>Kopia wygenerowanego projektu przed każdą zmianą. Przywracasz jednym kliknięciem.</p>
+          </div>
+          <div class="card">
+            <h3>📄 Własne szablony</h3>
+            <p>Dopisz własny szablon w JSON — bez ruszania kodu.</p>
+          </div>
+          <div class="card">
+            <h3>🐙 GitHub</h3>
+            <p>Zakładasz repozytorium i wrzucasz cały projekt jednym commitem.</p>
+          </div>
+          <div class="card">
+            <h3>🎨 Motywy</h3>
+            <p>Pięć wyglądów i cztery palety akcentu, przełączasz w ustawieniach.</p>
+          </div>
+          <div class="card">
+            <h3>🌍 Dwa języki</h3>
+            <p>Polski i angielski — cały interfejs, także nazwy szablonów i opcji.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Pobierz</h2>
+        <p class="lead">
+          Instalator rozpakowuje program, zakłada skrót w Menu Start i dodaje wpis na liście
+          zainstalowanych aplikacji. Potrzebujesz Windows 10 lub 11 — <code>gitools</code> korzysta
+          z WebView2, który jest już w systemie.
+        </p>
+
+        <div class="downloads">
+          <div class="download">
+            <div>
+              <b>Instalator (.exe)</b>
+              <small>gitools-setup-0.2.0.exe · ok. 4,8 MB · Windows 10/11</small>
+            </div>
+            <a class="btn btn--primary" href="downloads/gitools-setup-0.2.0.exe">⬇ Pobierz</a>
+          </div>
+
+          <div class="download">
+            <div>
+              <b>Wersja przenośna (.zip)</b>
+              <small>gitools-0.2.0-portable.zip · ok. 1,9 MB · rozpakuj i uruchom</small>
+            </div>
+            <a class="btn" href="downloads/gitools-0.2.0-portable.zip">⬇ Pobierz</a>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Wiersz poleceń</h2>
+        <p class="lead">
+          Wszystko, co robi okno, robi też terminal — bez okienek, bez myszki.
+        </p>
+
+        <pre><code># lista szablonów
+gitools list
+
+# podgląd struktury bez zapisu
+gitools preview node --name "moj-projekt"
+
+# utwórz projekt
+gitools init node --name "moj-projekt" -o git,readme
+
+# migawki
+gitools snapshots take ./moj-projekt
+gitools snapshots list
+
+# własne szablony JSON
+gitools templates add moj-szablon.json
+
+# GitHub
+gitools github login
+gitools github create moj-projekt -d "Opis"
+gitools github push jan/moj-projekt ./moj-projekt -m "Pierwszy commit"</code></pre>
+
+        <ul class="chips">
+          <li>Windows</li>
+          <li>Rust</li>
+          <li>WebView2</li>
+          <li>MIT</li>
+          <li>Bez konta</li>
+          <li>Offline</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Budowanie ze źródeł</h2>
+        <p class="lead">
+          Projekt to dwa crate’y i brak zależności od frameworka aplikacji — okno to WebView2,
+          a interfejs to zwykły HTML, CSS i JavaScript w jednym pliku.
+        </p>
+
+        <pre><code>git clone https://github.com/tznsec/gitools.git
+cd gitools
+cargo build --release        # -&gt; target/release/gitools.exe
+cargo test
+
+# instalator (potrzebny już zbudowany gitools.exe)
+powershell -ExecutionPolicy Bypass -File installer\build.ps1</code></pre>
+      </section>
+
+      <footer>
+        <p>
+          <a href="https://github.com/tznsec/gitools">github.com/tznsec/gitools</a> ·
+          <a href="https://github.com/tznsec/gitools/blob/main/LICENSE">MIT</a> ·
+          Autor: <a href="https://github.com/tznsec">tznsec</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

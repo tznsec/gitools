@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="gitools">
+  <title>gitools</title>
+  <defs>
+    <linearGradient id="gt-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6d7cff" />
+      <stop offset="48%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#e05bd0" />
+    </linearGradient>
+    <linearGradient id="gt-gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity=".34" />
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <rect x="1" y="1" width="62" height="62" rx="18" fill="url(#gt-bg)" />
+  <rect x="1" y="1" width="62" height="62" rx="18" fill="url(#gt-gloss)" />
+  <rect x="1.75" y="1.75" width="60.5" height="60.5" rx="17.25" fill="none" stroke="#fff" stroke-opacity=".32" stroke-width="1.5" />
+
+  <!--
+    Klucz mechanika: glowka z otworem, cienki trzon, spodek z zebami.
+
+    UWAGA: obrys rysujemy dwoma warstwami dla CAEJ sylwetki, dzieki czemu
+    w miejscach styku nie ma szwow. Dla kapsulek (trzon, spodek, zeby) wystarczy
+    grubszy pedzel atramentem i waski biela na tej samej osi. Glowka jest
+    krazkiem, a nie odcinkiem, wiec musimy ja wypelnic - pogrubiony pedzel
+    narysowalby ja od srodka i wyszla by dwa razy za duza.
+  -->
+
+  <!-- obrys: glowka jako dysk powiekszony o grubosc obrysu -->
+  <circle cx="32" cy="18" r="10.2" fill="#14151d" />
+
+  <!-- obrys: kapsulki -->
+  <g fill="none" stroke="#14151d" stroke-linecap="round">
+    <path d="M32 24 L32 42" stroke-width="8.4" />
+    <path d="M21 46 L43 46" stroke-width="8" />
+    <path d="M24 46 L24 50" stroke-width="6.4" />
+    <path d="M32 46 L32 52.5" stroke-width="6.4" />
+    <path d="M40 46 L40 49.5" stroke-width="6.4" />
+  </g>
+
+  <!-- wypelnienie: glowka -->
+  <circle cx="32" cy="18" r="8.2" fill="#fff" />
+
+  <!-- wypelnienie: kapsulki -->
+  <g fill="none" stroke="#fff" stroke-linecap="round">
+    <path d="M32 24 L32 42" stroke-width="4.4" />
+    <path d="M21 46 L43 46" stroke-width="4" />
+    <path d="M24 46 L24 50" stroke-width="2.4" />
+    <path d="M32 46 L32 52.5" stroke-width="2.4" />
+    <path d="M40 46 L40 49.5" stroke-width="2.4" />
+  </g>
+
+  <!-- otwor w glowce: wracamy do gradientu tla -->
+  <circle cx="32" cy="18" r="3.5" fill="url(#gt-bg)" />
+</svg>

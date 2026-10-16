@@ -1,0 +1,24 @@
+[package]
+name = "gitools-setup"
+description = "Instalator gitools - rozpakowuje program, robi skrot w Menu Start i wpisuje go na liste zainstalowanych"
+version = "0.2.0"
+edition = "2021"
+rust-version = "1.85"
+license = "MIT"
+publish = false
+
+# Instalator budujemy OSOBNO, po `cargo build --release` w glownym projekcie:
+# osadza gotowy `gitools.exe`, wiec w normalnym buildzie pliku jeszcze nie ma.
+# Dlatego trzymamy go poza workspace'm.
+[workspace]
+
+[dependencies]
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
+# Payload jest wklejany do .exe, wiec wylaczamy kompresje — inaczej plik
+# zostalby spakowany dwa razy i byl dwa razy wiekszy.
+panic = "abort"
