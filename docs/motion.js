@@ -531,22 +531,56 @@
   // ---------------------------------------------------------- start ----
 
   function start() {
-    splash();
-    headline();
-    reveal();
-    counters();
-    spotlight();
-    tilt();
-    pointer();
-    navbar();
-    terminal();
-    faq();
-    scrambleHeadings();
-    magnet();
-    ripple();
-    particles();
-    heroScroll();
-    scrollSpy();
+    try {
+      splash();
+    } catch (err) {
+      killSplash();
+      console.error('[gitools] splash:', err);
+    }
+
+    // Każda warstwa animacji jest niezależna — jedna wywalona nie może
+    // zostawić strony w połowie (albo w całkowitej ciemności).
+    const layers = [
+      ['headline', headline],
+      ['reveal', reveal],
+      ['counters', counters],
+      ['spotlight', spotlight],
+      ['tilt', tilt],
+      ['pointer', pointer],
+      ['navbar', navbar],
+      ['terminal', terminal],
+      ['faq', faq],
+      ['scramble', scrambleHeadings],
+      ['magnet', magnet],
+      ['ripple', ripple],
+      ['particles', particles],
+      ['heroScroll', heroScroll],
+      ['scrollSpy', scrollSpy],
+    ];
+
+    for (const [name, run] of layers) {
+      try {
+        run();
+      } catch (err) {
+        console.error(`[gitools] warstwa ${name}:`, err);
+      }
+    }
+
+    // Treść musi być widoczna nawet jeśli IntersectionObserver zawiódł.
+    setTimeout(() => {
+      for (const node of $$('.reveal:not(.is-in)')) {
+        const box = node.getBoundingClientRect();
+        if (box.top < window.innerHeight && box.bottom > 0) node.classList.add('is-in');
+      }
+    }, 2500);
+  }
+
+  function killSplash() {
+    const node = $('#splash');
+    if (!node) return;
+    node.classList.add('is-done');
+    setTimeout(() => node.remove(), 700);
+    document.body.style.overflow = '';
   }
 
   if (document.readyState === 'loading') {
