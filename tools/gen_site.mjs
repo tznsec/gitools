@@ -6,9 +6,13 @@
 
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const ROOT = process.cwd();
+// Sciezki od pliku skryptu, nie od katalogu roboczego.
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(HERE, '..');
+
 const EXE = path.join(ROOT, 'target', 'release', 'gitools.exe');
 const DOCS = path.join(ROOT, 'docs');
 

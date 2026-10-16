@@ -5,11 +5,17 @@
 // szablonów i ich opcji bierzemy z `gitools info <id> --json`.
 
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readdirSync, unlinkSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const EXE = path.join(process.cwd(), 'target', 'release', 'gitools.exe');
-const OUT = process.argv[2] || path.join(process.cwd(), 'wiki');
+// Sciezki liczymy od pliku skryptu, nie od katalogu roboczego — inaczej
+// generator pada po `cd` do katalogu wiki.
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(HERE, '..');
+
+const EXE = path.join(ROOT, 'target', 'release', 'gitools.exe');
+const OUT = path.resolve(process.argv[2] || path.join(ROOT, 'wiki'));
 
 const VERSION = execFileSync(EXE, ['--version'], { encoding: 'utf8' }).trim();
 const ids = execFileSync(EXE, ['list', '--json'], { encoding: 'utf8' });
@@ -17,8 +23,12 @@ const templates = JSON.parse(ids);
 
 console.log(`gitools ${VERSION}, ${templates.length} szablonow -> ${OUT}`);
 
-rmSync(OUT, { recursive: true, force: true });
+// Kasujemy TYLKO wygenerowane strony. W tym katalogu mieszka `.git`
+// (repo wiki) — `rmSync(OUT, {recursive: true})` skasowałby je razem z nimi.
 mkdirSync(OUT, { recursive: true });
+for (const name of readdirSync(OUT)) {
+  if (name.endsWith('.md')) unlinkSync(path.join(OUT, name));
+}
 
 /** Pełne dane szablonu z programu. */
 function info(id) {
