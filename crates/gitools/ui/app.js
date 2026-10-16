@@ -1762,7 +1762,8 @@ async function start() {
     renderTemplates();
     renderUserTemplates();
     selectTemplate('rust');
-    setTab('templates');
+    // `--tab github` w wierszu poleceń otwiera aplikację na innej zakładce.
+    setTab(TABS.includes(data.startTab) ? data.startTab : 'templates');
     refresh();
 
     // Migawki wczytujemy w tle, żeby aplikacja startowała szybko.

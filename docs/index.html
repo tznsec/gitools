@@ -1,371 +1,424 @@
 <!doctype html>
 <html lang="pl">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>gitools — generator struktur plików</title>
-    <meta
-      name="description"
-      content="gitools — generator struktur plików. Szablony projektów, migawki, własne szablony JSON i wysyłka na GitHub. Projekt open source autorstwa tznsec."
-    />
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>gitools — generator struktur plików</title>
+<meta name="description" content="gitools tworzy kompletny szkielet projektu jednym poleceniem: 13 szablonów, migawki, własne szablony JSON i wysyłka na GitHub. Projekt open source autorstwa tznsec." />
+<meta property="og:title" content="gitools — generator struktur plików" />
+<meta property="og:description" content="Od szablonu do repozytorium. 13 szablonów, migawki, własne szablony JSON, dwa języki. Projekt open source autorstwa tznsec." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#0b0c12" />
+<link rel="icon" href="logo.svg" type="image/svg+xml" />
+<link rel="preload" as="image" href="logo.svg" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="motion.css" />
+<script src="motion.js" defer></script>
+</head>
+<body>
 
-    <link rel="icon" href="logo.svg" type="image/svg+xml" />
+<!-- Splash: logo rysowane od zera, litery po kolei, pasek postepu. -->
+<div class="splash" id="splash" role="status" aria-label="Ładowanie gitools">
+  <div class="splash__inner">
+    <svg class="splash__logo" viewBox="0 0 64 64" aria-hidden="true">
+      <g fill="none" stroke="#eef0fa" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="32" cy="18" r="8.2" style="--len:52" />
+        <path d="M32 24 L32 42" style="--len:18" />
+        <path d="M21 46 L43 46" style="--len:22" />
+        <path d="M24 46 L24 50" style="--len:4" />
+        <path d="M32 46 L32 52.5" style="--len:6.5" />
+        <path d="M40 46 L40 49.5" style="--len:3.5" />
+      </g>
+    </svg>
+    <div class="splash__name">gitools</div>
+    <div class="splash__tag">generator struktur plików</div>
+    <div class="splash__bar"><i></i></div>
+  </div>
+</div>
 
-    <style>
-      :root {
-        --c1: #6d7cff;
-        --c2: #8b5cf6;
-        --c3: #e05bd0;
-        --text: #eef0fa;
-        --muted: #9aa2bb;
-        --muted-2: #6f7791;
-        --line: rgba(255, 255, 255, 0.1);
-        --glass: rgba(255, 255, 255, 0.05);
-        --radius: 16px;
-      }
+<div class="progress" aria-hidden="true"></div>
+<div class="cursor-glow" aria-hidden="true"></div>
+<div class="aurora"><i></i><i></i><i></i></div>
 
-      * {
-        box-sizing: border-box;
-      }
+<nav class="nav">
+  <div class="wrap nav__in">
+    <a class="nav__brand" href="#top"><img src="logo.svg" alt="" /> gitools</a>
+    <div class="nav__links">
+      <a href="#moznosci">Możliwości</a>
+      <a href="#szablony">Szablony</a>
+      <a href="#zrzuty">Wygląd</a>
+      <a href="#pobieranie">Pobieranie</a>
+      <a href="#terminal">Terminal</a>
+      <a href="#faq">Pytania</a>
+    </div>
+    <a class="btn btn--primary btn--sm" href="downloads/gitools-setup-0.2.0.exe">⬇ Pobierz</a>
+  </div>
+</nav>
 
-      html {
-        scroll-behavior: smooth;
-      }
+<header class="hero wrap" id="top">
+  <img class="hero__logo" src="logo.svg" alt="gitools" />
+  <h1>gitools</h1>
+  <p class="hero__sub">Generator struktur plików — od szablonu do repozytorium.</p>
+  <p class="hero__by">Projekt open source autorstwa <a href="https://github.com/tznsec">tznsec</a> · wersja 0.2.0 · MIT</p>
 
-      body {
-        margin: 0;
-        color: var(--text);
-        font: 16px/1.65 "Segoe UI", system-ui, -apple-system, sans-serif;
-        background:
-          radial-gradient(1100px 620px at 12% -10%, rgba(109, 124, 255, 0.28), transparent 60%),
-          radial-gradient(900px 520px at 88% 0%, rgba(224, 91, 208, 0.22), transparent 62%),
-          radial-gradient(800px 600px at 50% 110%, rgba(139, 92, 246, 0.2), transparent 60%),
-          #0b0c12;
-        min-height: 100vh;
-      }
+  <div class="cta">
+    <a class="btn btn--primary" href="downloads/gitools-setup-0.2.0.exe">⬇ Pobierz instalator</a>
+    <a class="btn" href="https://github.com/tznsec/gitools/releases">Wszystkie wydania</a>
+    <a class="btn btn--ghost" href="https://github.com/tznsec/gitools">Kod źródłowy</a>
+  </div>
 
-      .wrap {
-        max-width: 960px;
-        margin: 0 auto;
-        padding: 0 24px;
-      }
+  <div class="stats reveal">
+    <div class="stat"><b data-count="13">0</b><span>szablonów</span></div>
+    <div class="stat"><b data-count="181">0</b><span>plików w domyślnych wariantach</span></div>
+    <div class="stat"><b data-count="104">0</b><span>opcji do przekonfigurowania</span></div>
+    <div class="stat"><b data-count="32">0</b><span>list wyboru</span></div>
+    <div class="stat"><b data-count="2">0</b><span>języki interfejsu</span></div>
+    <div class="stat"><b data-count="5">0</b><span>motywów interfejsu</span></div>
+  </div>
+</header>
 
-      header.hero {
-        padding: 88px 0 56px;
-        text-align: center;
-      }
+<!-- Pasek przewijanych szablonów -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__row">
+    <span class="marquee__item">📦 <b>Pusty projekt</b> · 5 plików</span>
+    <span class="marquee__item">🦀 <b>Rust</b> · 10 plików</span>
+    <span class="marquee__item">🟩 <b>Node.js</b> · 14 plików</span>
+    <span class="marquee__item">⚛️ <b>React</b> · 23 pliki</span>
+    <span class="marquee__item">💚 <b>Vue</b> · 17 plików</span>
+    <span class="marquee__item">🔥 <b>Svelte</b> · 15 plików</span>
+    <span class="marquee__item">🚀 <b>Astro</b> · 14 plików</span>
+    <span class="marquee__item">⚛️ <b>Electron</b> · 17 plików</span>
+    <span class="marquee__item">🦀 <b>Tauri</b> · 18 plików</span>
+    <span class="marquee__item">🦋 <b>Flutter</b> · 15 plików</span>
+    <span class="marquee__item">🟣 <b>.NET</b> · 11 plików</span>
+    <span class="marquee__item">🐍 <b>Python</b> · 10 plików</span>
+    <span class="marquee__item">🐹 <b>Go</b> · 12 plików</span>
+    <span class="marquee__item">📦 <b>Pusty projekt</b> · 5 plików</span>
+    <span class="marquee__item">🦀 <b>Rust</b> · 10 plików</span>
+    <span class="marquee__item">🟩 <b>Node.js</b> · 14 plików</span>
+    <span class="marquee__item">⚛️ <b>React</b> · 23 pliki</span>
+    <span class="marquee__item">💚 <b>Vue</b> · 17 plików</span>
+    <span class="marquee__item">🔥 <b>Svelte</b> · 15 plików</span>
+    <span class="marquee__item">🚀 <b>Astro</b> · 14 plików</span>
+    <span class="marquee__item">⚛️ <b>Electron</b> · 17 plików</span>
+    <span class="marquee__item">🦀 <b>Tauri</b> · 18 plików</span>
+    <span class="marquee__item">🦋 <b>Flutter</b> · 15 plików</span>
+    <span class="marquee__item">🟣 <b>.NET</b> · 11 plików</span>
+    <span class="marquee__item">🐍 <b>Python</b> · 10 plików</span>
+    <span class="marquee__item">🐹 <b>Go</b> · 12 plików</span>
+  </div>
+</div>
 
-      header.hero img {
-        width: 104px;
-        height: 104px;
-        border-radius: 24px;
-        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
-      }
+<section class="wrap reveal" id="moznosci">
+  <p class="eyebrow reveal">Możliwości</p>
+  <h2 class="reveal">Robi całą robotę, nie tylko część</h2>
+  <p class="lead reveal">
+    Plan powstaje osobno od zapisu, więc podgląd, <code style="font-family:var(--mono);font-size:.9em">--dry-run</code>
+    i prawdziwe tworzenie plików idą tą samą drogą. Nie ma osobnej ścieżki kodu,
+    która mogłaby się rozjechać z tym, co naprawdę powstaje na dysku.
+  </p>
 
-      h1 {
-        font-size: clamp(38px, 7vw, 64px);
-        letter-spacing: -0.03em;
-        margin: 22px 0 6px;
-        background: linear-gradient(100deg, var(--c1), var(--c2) 45%, var(--c3));
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-      }
+  <div class="grid grid--3">
+    <article class="card reveal tilt"><div class="card__ico">🧩</div><h3>13 szablonów</h3>
+      <p>Rust, Node.js, React, Vue, Svelte, Astro, Electron, Tauri, .NET, Flutter, Python, Go i pusty katalog bazowy. Każdy z własnymi opcjami.</p></article>
+    <article class="card reveal tilt"><div class="card__ico">📸</div><h3>Migawki</h3>
+      <p>Kopia wygenerowanego projektu przed każdą zmianą. Podgląd plik po pliku, przywracanie do wybranego katalogu, tryb automatyczny z limitem.</p></article>
+    <article class="card reveal tilt"><div class="card__ico">🐙</div><h3>GitHub</h3>
+      <p>Zaloguj się tokenem, załóż repozytorium i wrzuć cały projekt <b>jednym commitem</b> — także pliki binarne i instalator.</p></article>
+    <article class="card reveal tilt"><div class="card__ico">📄</div><h3>Własne szablony JSON</h3>
+      <p>Dopisz definicję w JSON — GUI i terminal, bez ruszania kodu. Zły szablon nie blokuje aplikacji.</p></article>
+    <article class="card reveal tilt"><div class="card__ico">🎨</div><h3>Pięć wyglądów</h3>
+      <p>Szkło, ciemny, jasny i dwa kreskówkowe, cztery palety akcentu, sterowana gęstość i animacje.</p></article>
+    <article class="card reveal tilt"><div class="card__ico">🌍</div><h3>Dwa języki</h3>
+      <p>Cały interfejs po polsku i angielsku — także nazwy szablonów, opcji i grupy ustawień.</p></article>
+    <article class="card reveal tilt"><div class="card__ico">🔒</div><h3>Bezpieczne nadpisywanie</h3>
+      <p>Bez <code style="font-family:var(--mono);font-size:.9em">--force</code> żaden istniejący plik nie zostanie ruszony. Uprawnienia katalogu sprawdzane wprost.</p></article>
+    <article class="card reveal tilt"><div class="card__ico">🌱</div><h3>Polskie nazwy</h3>
+      <p>„Łąka Żubra” daje <code style="font-family:var(--mono);font-size:.9em">laka-zubra</code>, <code style="font-family:var(--mono);font-size:.9em">laka_zubra</code> i <code style="font-family:var(--mono);font-size:.9em">LakaZubra</code>.</p></article>
+    <article class="card reveal tilt"><div class="card__ico">🧪</div><h3>Testowalny rdzeń</h3>
+      <p>77 testów obejmuje plan, wszystkie szablony, migawki, logo i klienta GitHub — w tym przypadek, że token wyciekłby do logów.</p></article>
+  </div>
+</section>
 
-      .tagline {
-        font-size: clamp(17px, 2.4vw, 22px);
-        color: var(--muted);
-        margin: 0 0 18px;
-      }
-
-      .by {
-        color: var(--muted-2);
-        font-size: 14px;
-        margin: 0 0 30px;
-      }
-
-      .by a {
-        color: var(--muted);
-      }
-
-      .cta {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-
-      .btn {
-        display: inline-block;
-        padding: 12px 24px;
-        border-radius: 11px;
-        text-decoration: none;
-        font-weight: 600;
-        border: 1px solid var(--line);
-        background: var(--glass);
-        color: var(--text);
-        transition: transform 0.16s ease, border-color 0.16s ease;
-      }
-
-      .btn:hover {
-        transform: translateY(-2px);
-        border-color: rgba(255, 255, 255, 0.28);
-      }
-
-      .btn--primary {
-        background: linear-gradient(100deg, var(--c1), var(--c2) 50%, var(--c3));
-        border-color: transparent;
-        color: #fff;
-        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.35);
-      }
-
-      section {
-        padding: 34px 0;
-        border-top: 1px solid var(--line);
-      }
-
-      h2 {
-        font-size: 25px;
-        letter-spacing: -0.015em;
-        margin: 0 0 8px;
-      }
-
-      .lead {
-        color: var(--muted);
-        margin: 0 0 22px;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(238px, 1fr));
-        gap: 14px;
-      }
-
-      .card {
-        padding: 18px;
-        border-radius: var(--radius);
-        border: 1px solid var(--line);
-        background: var(--glass);
-      }
-
-      .card h3 {
-        margin: 0 0 6px;
-        font-size: 16.5px;
-      }
-
-      .card p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 14.5px;
-      }
-
-      pre {
-        background: rgba(0, 0, 0, 0.4);
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 16px 18px;
-        overflow-x: auto;
-        font: 13.5px/1.6 "Cascadia Code", Consolas, ui-monospace, monospace;
-        color: #d8dcf0;
-      }
-
-      .chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin: 18px 0 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .chips li {
-        padding: 6px 12px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: var(--glass);
-        color: var(--muted);
-        font-size: 13.5px;
-      }
-
-      .downloads {
-        display: grid;
-        gap: 12px;
-      }
-
-      .download {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        flex-wrap: wrap;
-        padding: 16px 18px;
-        border-radius: var(--radius);
-        border: 1px solid var(--line);
-        background: var(--glass);
-      }
-
-      .download b {
-        display: block;
-        font-size: 16px;
-      }
-
-      .download small {
-        color: var(--muted-2);
-      }
-
-      footer {
-        padding: 34px 0 56px;
-        border-top: 1px solid var(--line);
-        color: var(--muted-2);
-        font-size: 14px;
-        text-align: center;
-      }
-
-      footer a {
-        color: var(--muted);
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="wrap">
-      <header class="hero">
-        <img src="logo.svg" alt="gitools" />
-        <h1>gitools</h1>
-        <p class="tagline">Generator struktur plików — od szablonu do repozytorium.</p>
-        <p class="by">
-          Projekt open source autorstwa <a href="https://github.com/tznsec">tznsec</a> · MIT
-        </p>
-
-        <div class="cta">
-          <a class="btn btn--primary" href="downloads/gitools-setup-0.2.0.exe">⬇ Pobierz instalator</a>
-          <a class="btn" href="https://github.com/tznsec/gitools/releases">Wszystkie wydania</a>
-          <a class="btn" href="https://github.com/tznsec/gitools">Kod źródłowy</a>
+<section class="wrap reveal" id="szablony">
+  <p class="eyebrow reveal">Szablony</p>
+  <h2 class="reveal">Co dokładnie dostajesz</h2>
+  <p class="lead reveal">
+    Liczby plików policzone są z prawdziwego planu wygenerowanego przez
+    <code style="font-family:var(--mono);font-size:.9em">gitools init &lt;id&gt; --json --dry-run</code>,
+    więc są zgodne z tym, co naprawdę wyląduje na dysku.
+  </p>
+  <div class="tpls">
+      <article class="tpl reveal tilt" style="--tint:#8b5cf6">
+        <div class="tpl__icon">📦</div>
+        <h3>Pusty projekt</h3>
+        <p class="tpl__tag">Czysty katalog z plikami bazowymi</p>
+        <div class="tpl__stats">
+          <span>5 plików</span>
+          <span>4 opcje</span>
+          <span>1 lista</span>
         </div>
-      </header>
-
-      <section>
-        <h2>Co potrafi</h2>
-        <p class="lead">
-          Jedno polecenie tworzy kompletną strukturę projektu — razem z manifestami, testami,
-          plikiem README i historią git.
-        </p>
-
-        <div class="grid">
-          <div class="card">
-            <h3>🧩 13 szablonów</h3>
-            <p>Rust, Node.js, React, Vue, Svelte, Astro, .NET, Flutter, Python, Go i inne.</p>
-          </div>
-          <div class="card">
-            <h3>📸 Migawki</h3>
-            <p>Kopia wygenerowanego projektu przed każdą zmianą. Przywracasz jednym kliknięciem.</p>
-          </div>
-          <div class="card">
-            <h3>📄 Własne szablony</h3>
-            <p>Dopisz własny szablon w JSON — bez ruszania kodu.</p>
-          </div>
-          <div class="card">
-            <h3>🐙 GitHub</h3>
-            <p>Zakładasz repozytorium i wrzucasz cały projekt jednym commitem.</p>
-          </div>
-          <div class="card">
-            <h3>🎨 Motywy</h3>
-            <p>Pięć wyglądów i cztery palety akcentu, przełączasz w ustawieniach.</p>
-          </div>
-          <div class="card">
-            <h3>🌍 Dwa języki</h3>
-            <p>Polski i angielski — cały interfejs, także nazwy szablonów i opcji.</p>
-          </div>
+        <ul class="tpl__files"><li><code>.gitignore</code></li><li><code>.editorconfig</code></li><li><code>README.md</code></li></ul>
+        <code class="tpl__id">gitools init empty ./projekt</code>
+      </article>
+      <article class="tpl reveal tilt" style="--tint:#f97316">
+        <div class="tpl__icon">🦀</div>
+        <h3>Rust</h3>
+        <p class="tpl__tag">Aplikacja CLI lub biblioteka w Rust 2024</p>
+        <div class="tpl__stats">
+          <span>10 plików</span>
+          <span>9 opcji</span>
+          <span>2 listy</span>
         </div>
-      </section>
-
-      <section>
-        <h2>Pobierz</h2>
-        <p class="lead">
-          Instalator rozpakowuje program, zakłada skrót w Menu Start i dodaje wpis na liście
-          zainstalowanych aplikacji. Potrzebujesz Windows 10 lub 11 — <code>gitools</code> korzysta
-          z WebView2, który jest już w systemie.
-        </p>
-
-        <div class="downloads">
-          <div class="download">
-            <div>
-              <b>Instalator (.exe)</b>
-              <small>gitools-setup-0.2.0.exe · ok. 4,8 MB · Windows 10/11</small>
-            </div>
-            <a class="btn btn--primary" href="downloads/gitools-setup-0.2.0.exe">⬇ Pobierz</a>
-          </div>
-
-          <div class="download">
-            <div>
-              <b>Wersja przenośna (.zip)</b>
-              <small>gitools-0.2.0-portable.zip · ok. 1,9 MB · rozpakuj i uruchom</small>
-            </div>
-            <a class="btn" href="downloads/gitools-0.2.0-portable.zip">⬇ Pobierz</a>
-          </div>
+        <ul class="tpl__files"><li><code>Cargo.toml</code></li><li><code>src/main.rs</code></li><li><code>tests/cli.rs</code></li></ul>
+        <code class="tpl__id">gitools init rust ./projekt</code>
+      </article>
+      <article class="tpl reveal tilt" style="--tint:#22c55e">
+        <div class="tpl__icon">🟩</div>
+        <h3>Node.js</h3>
+        <p class="tpl__tag">Backend w Node z Express lub Fastify</p>
+        <div class="tpl__stats">
+          <span>14 plików</span>
+          <span>9 opcji</span>
+          <span>4 listy</span>
         </div>
-      </section>
+        <ul class="tpl__files"><li><code>package.json</code></li><li><code>tsconfig.json</code></li><li><code>eslint.config.js</code></li></ul>
+        <code class="tpl__id">gitools init node ./projekt</code>
+      </article>
+      <article class="tpl reveal tilt" style="--tint:#38bdf8">
+        <div class="tpl__icon">⚛️</div>
+        <h3>React</h3>
+        <p class="tpl__tag">Vite + React + TypeScript</p>
+        <div class="tpl__stats">
+          <span>23 pliki</span>
+          <span>9 opcji</span>
+          <span>3 listy</span>
+        </div>
+        <ul class="tpl__files"><li><code>package.json</code></li><li><code>vite.config.ts</code></li><li><code>tsconfig.json</code></li></ul>
+        <code class="tpl__id">gitools init react ./projekt</code>
+      </article>
+      <article class="tpl reveal tilt" style="--tint:#42b883">
+        <div class="tpl__icon">💚</div>
+        <h3>Vue</h3>
+        <p class="tpl__tag">Vite + Vue 3 + TypeScript</p>
+        <div class="tpl__stats">
+          <span>17 plików</span>
+          <span>8 opcji</span>
+          <span>2 listy</span>
+        </div>
+        <ul class="tpl__files"><li><code>package.json</code></li><li><code>vite.config.ts</code></li><li><code>index.html</code></li></ul>
+        <code class="tpl__id">gitools init vue ./projekt</code>
+      </article>
+      <article class="tpl reveal tilt" style="--tint:#ff7043">
+        <div class="tpl__icon">🔥</div>
+        <h3>Svelte</h3>
+        <p class="tpl__tag">Vite + Svelte 5 + TypeScript</p>
+        <div class="tpl__stats">
+          <span>15 plików</span>
+          <span>7 opcji</span>
+          <span>2 listy</span>
+        </div>
+        <ul class="tpl__files"><li><code>package.json</code></li><li><code>vite.config.ts</code></li><li><code>svelte.config.js</code></li></ul>
+        <code class="tpl__id">gitools init svelte ./projekt</code>
+      </article>
+      <article class="tpl reveal tilt" style="--tint:#ff5d01">
+        <div class="tpl__icon">🚀</div>
+        <h3>Astro</h3>
+        <p class="tpl__tag">Strony statyczne z komponentami frameworków</p>
+        <div class="tpl__stats">
+          <span>14 plików</span>
+          <span>7 opcji</span>
+          <span>1 lista</span>
+        </div>
+        <ul class="tpl__files"><li><code>package.json</code></li><li><code>astro.config.mjs</code></li><li><code>tsconfig.json</code></li></ul>
+        <code class="tpl__id">gitools init astro ./projekt</code>
+      </article>
+      <article class="tpl reveal tilt" style="--tint:#60a5fa">
+        <div class="tpl__icon">⚛️</div>
+        <h3>Electron</h3>
+        <p class="tpl__tag">Aplikacja desktopowa (TS + React lub vanilla)</p>
+        <div class="tpl__stats">
+          <span>17 plików</span>
+          <span>10 opcji</span>
+          <span>4 listy</span>
+        </div>
+        <ul class="tpl__files"><li><code>package.json</code></li><li><code>src/main/index.ts</code></li><li><code>src/main/preload.ts</code></li></ul>
+        <code class="tpl__id">gitools init electron ./projekt</code>
+      </article>
+      <article class="tpl reveal tilt" style="--tint:#f87171">
+        <div class="tpl__icon">🦀</div>
+        <h3>Tauri</h3>
+        <p class="tpl__tag">Aplikacja desktopowa w Rust + webview</p>
+        <div class="tpl__stats">
+          <span>18 plików</span>
+          <span>8 opcji</span>
+          <span>4 listy</span>
+        </div>
+        <ul class="tpl__files"><li><code>package.json</code></li><li><code>src-tauri/Cargo.toml</code></li><li><code>src-tauri/src/lib.rs</code></li></ul>
+        <code class="tpl__id">gitools init tauri ./projekt</code>
+      </article>
+      <article class="tpl reveal tilt" style="--tint:#54c5f8">
+        <div class="tpl__icon">🦋</div>
+        <h3>Flutter</h3>
+        <p class="tpl__tag">Aplikacja mobilna (Android/iOS) w Dart</p>
+        <div class="tpl__stats">
+          <span>15 plików</span>
+          <span>8 opcji</span>
+          <span>2 listy</span>
+        </div>
+        <ul class="tpl__files"><li><code>pubspec.yaml</code></li><li><code>analysis_options.yaml</code></li><li><code>lib/main.dart</code></li></ul>
+        <code class="tpl__id">gitools init flutter ./projekt</code>
+      </article>
+      <article class="tpl reveal tilt" style="--tint:#512bd4">
+        <div class="tpl__icon">🟣</div>
+        <h3>.NET</h3>
+        <p class="tpl__tag">C# — konsola albo minimalne API</p>
+        <div class="tpl__stats">
+          <span>11 plików</span>
+          <span>8 opcji</span>
+          <span>2 listy</span>
+        </div>
+        <ul class="tpl__files"><li><code>site-probe.slnx</code></li><li><code>Directory.Build.props</code></li><li><code>src/SiteProbe/SiteProbe.csproj</code></li></ul>
+        <code class="tpl__id">gitools init dotnet ./projekt</code>
+      </article>
+      <article class="tpl reveal tilt" style="--tint:#a855f7">
+        <div class="tpl__icon">🐍</div>
+        <h3>Python</h3>
+        <p class="tpl__tag">Pakiet z układem src/ + FastAPI + pytest</p>
+        <div class="tpl__stats">
+          <span>10 plików</span>
+          <span>9 opcji</span>
+          <span>2 listy</span>
+        </div>
+        <ul class="tpl__files"><li><code>pyproject.toml</code></li><li><code>src/site_probe/__init__.py</code></li><li><code>src/site_probe/api.py</code></li></ul>
+        <code class="tpl__id">gitools init python ./projekt</code>
+      </article>
+      <article class="tpl reveal tilt" style="--tint:#2dd4bf">
+        <div class="tpl__icon">🐹</div>
+        <h3>Go</h3>
+        <p class="tpl__tag">Moduł Go z CLI lub serwerem HTTP</p>
+        <div class="tpl__stats">
+          <span>12 plików</span>
+          <span>8 opcji</span>
+          <span>3 listy</span>
+        </div>
+        <ul class="tpl__files"><li><code>go.mod</code></li><li><code>cmd/site_probe/main.go</code></li><li><code>internal/config/config.go</code></li></ul>
+        <code class="tpl__id">gitools init go ./projekt</code>
+      </article>
+  </div>
+</section>
 
-      <section>
-        <h2>Wiersz poleceń</h2>
-        <p class="lead">
-          Wszystko, co robi okno, robi też terminal — bez okienek, bez myszki.
-        </p>
+<section class="wrap reveal" id="zrzuty">
+  <p class="eyebrow reveal">Wygląd</p>
+  <h2 class="reveal">Jedno okno, trzy zakładki</h2>
+  <p class="lead reveal">Aplikacja to natywny okno WebView2 z interfejsem w jednym pliku HTML — bez Electrona i bez bundlera.</p>
 
-        <pre><code># lista szablonów
+  <div class="shots">
+    <figure class="shot" style="margin:0">
+      <img src="img/templates.jpg" alt="Zakładka Szablony — lista po lewej, opcje i podgląd struktury po prawej" loading="lazy" />
+      <figcaption><b>Szablony</b> — lista z wyszukiwaniem po lewej, a po prawej katalog docelowy, dane projektu, opcje szablonu i podgląd struktury plików z zawartością.</figcaption>
+    </figure>
+    <figure class="shot" style="margin:0">
+      <img src="img/snapshots.jpg" alt="Zakładka Migawki — siatka zapisanych stanów projektu" loading="lazy" />
+      <figcaption><b>Migawki</b> — zapisane stany projektów, podgląd zawartości, przywracanie i ustawienia migawek automatycznych.</figcaption>
+    </figure>
+    <figure class="shot" style="margin:0">
+      <img src="img/github.jpg" alt="Zakładka GitHub — logowanie tokenem, zakładanie repozytorium i wysyłka projektu" loading="lazy" />
+      <figcaption><b>GitHub</b> — logowanie tokenem dostępu, zakładanie repozytorium i wysyłka całego katalogu jednym commitem.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="wrap reveal" id="pobieranie">
+  <p class="eyebrow reveal">Pobieranie</p>
+  <h2 class="reveal">Instalator albo wersja przenośna</h2>
+  <p class="lead reveal">
+    Instalator to jeden plik <code style="font-family:var(--mono);font-size:.9em">.exe</code> napisany w Rust —
+    rozpakowuje program, zakłada skrót w Menu Start i dodaje wpis na liście zainstalowanych aplikacji.
+    Nie wymaga Inno Setup, NSIS ani WiX.
+  </p>
+
+  <div class="dl">
+    <div class="dl__item">
+      <div><b>Instalator (.exe)</b><small>gitools-setup-0.2.0.exe · ~4,8 MB · Windows 10/11</small></div>
+      <a class="btn btn--primary" href="downloads/gitools-setup-0.2.0.exe">⬇ Pobierz</a>
+    </div>
+    <div class="dl__item">
+      <div><b>Wersja przenośna (.zip)</b><small>gitools-0.2.0-portable.zip · ~1,9 MB · rozpakuj i uruchom</small></div>
+      <a class="btn" href="downloads/gitools-0.2.0-portable.zip">⬇ Pobierz</a>
+    </div>
+    <div class="dl__item">
+      <div><b>Kod źródłowy</b><small>git clone https://github.com/tznsec/gitools.git</small></div>
+      <a class="btn btn--ghost" href="https://github.com/tznsec/gitools">GitHub</a>
+    </div>
+  </div>
+
+  <div class="req">
+    <span>Windows 10 / 11</span><span>WebView2 Runtime</span><span>Rust 1.85+ przy budowaniu</span><span>MIT</span><span>Bez konta</span><span>Działa offline</span>
+  </div>
+</section>
+
+<section class="wrap reveal" id="terminal">
+  <p class="eyebrow reveal">Terminal</p>
+  <h2 class="reveal">Wszystko, co robi okno, robi też powłoka</h2>
+  <p class="lead reveal">Te same pliki, ten sam plan. Do skryptów i CI bez okienek.</p>
+
+  <div class="code">
+    <div class="code__bar"><i></i><i></i><i></i><span>terminal</span><button onclick="navigator.clipboard?.writeText(this.closest('.code').querySelector('pre').innerText)">kopiuj</button></div>
+<pre><span class="c"># lista szablonów</span>
 gitools list
 
-# podgląd struktury bez zapisu
-gitools preview node --name "moj-projekt"
+<span class="c"># projekt w Rust z testami i licencją MIT</span>
+gitools init rust ./moj-projekt -N <span class="s">"Mój Projekt"</span> -o kind=library -o tests
 
-# utwórz projekt
-gitools init node --name "moj-projekt" -o git,readme
+<span class="c"># sprawdzić co się stanie, bez pisania czegokolwiek</span>
+gitools init node ./api --dry-run
 
-# migawki
+<span class="c"># migawki</span>
 gitools snapshots take ./moj-projekt
 gitools snapshots list
 
-# własne szablony JSON
-gitools templates add moj-szablon.json
+<span class="c"># własny szablon</span>
+gitools templates example &gt; moj.json
+gitools templates add moj.json
 
-# GitHub
+<span class="c"># GitHub — cały projekt jednym commitem</span>
 gitools github login
-gitools github create moj-projekt -d "Opis"
-gitools github push jan/moj-projekt ./moj-projekt -m "Pierwszy commit"</code></pre>
+gitools github create moj-projekt -d <span class="s">"Opis"</span>
+gitools github push tznsec/moj-projekt ./moj-projekt -m <span class="s">"Pierwszy commit"</span></pre>
+  </div>
+</section>
 
-        <ul class="chips">
-          <li>Windows</li>
-          <li>Rust</li>
-          <li>WebView2</li>
-          <li>MIT</li>
-          <li>Bez konta</li>
-          <li>Offline</li>
-        </ul>
-      </section>
+<section class="wrap reveal" id="faq">
+  <p class="eyebrow reveal">Pytania</p>
+  <h2 class="reveal">Co warto wiedzieć</h2>
+  <div class="faq">
+    <details class="reveal"><summary>Czy muszę się logować do konta?</summary>
+      <p>Nie. Wszystko działa offline i bez konta. Token GitHub jest potrzebny dopiero wtedy, kiedy chcesz zakładać repozytoria i wysyłać projekty.</p></details>
+    <details class="reveal"><summary>Czy nadpisze mi pliki?</summary>
+      <p>Nie. Bez <code>--force</code> gitools kończy się listą konfliktów i zapisuje tylko to, czego nie ma. Z <code>--force</code> nadpisuje świadomie — i mówi o tym w podsumowaniu.</p></details>
+    <details class="reveal"><summary>Co to jest migawka i po mi?</summary>
+      <p>Migawka to zwykły katalog z plikami projektu plus metadane (użyty szablon, data, opcje). Dzięki temu przetrwa usunięcie samego projektu. Możesz podejrzeć pliki przed przywróceniem i wybrać katalog docelowy inny niż oryginalny.</p></details>
+    <details class="reveal"><summary>Jak dodać własny szablon?</summary>
+      <p>Plik JSON wklejony w <b>Ustawienia → Własne szablony</b> albo <code>gitools templates add plik.json</code>. Pełny format opisany jest w <a href="https://github.com/tznsec/gitools/wiki/Wlasne-szablony" style="color:var(--c1)">wiki</a>. Szablon widzi zmienne <code>{{project_name}}</code>, <code>{{slug}}</code>, <code>{{snake}}</code>, <code>{{Pascal}}</code> i warunki <code>{{#if opcja}}</code>.</p></details>
+    <details class="reveal"><summary>Czy wysyłka na GitHub jest bezpieczna dla tokenu?</summary>
+      <p>Token to hasło do konta, więc nigdy nie trafia w komunikaty błędów ani logi — <code>github whoami</code> pokazuje tylko liczbę znaków. Przechowujemy go lokalnie w <code>%LOCALAPPDATA%\gitools\github.json</code>. Szczegóły w <a href="https://github.com/tznsec/gitools/wiki/GitHub" style="color:var(--c1)">wiki</a>.</p></details>
+    <details class="reveal"><summary>Czy jest dokumentacja?</summary>
+      <p>Tak — <a href="https://github.com/tznsec/gitools/wiki" style="color:var(--c1)">wiki projektu</a>: instalacja, wszystkie polecenia, 13 szablonów z opcjami, migawki, własne szablony, GitHub, budowanie ze źródeł i rozwiązywanie problemów.</p></details>
+    <details class="reveal"><summary>Czy mogę się przyczynić?</summary>
+      <p>Tak — issues i pull requesty na <a href="https://github.com/tznsec/gitools" style="color:var(--c1)">GitHubie</a>. Projekt jest na licencji MIT.</p></details>
+  </div>
+</section>
 
-      <section>
-        <h2>Budowanie ze źródeł</h2>
-        <p class="lead">
-          Projekt to dwa crate’y i brak zależności od frameworka aplikacji — okno to WebView2,
-          a interfejs to zwykły HTML, CSS i JavaScript w jednym pliku.
-        </p>
+<footer class="wrap">
+  <p>
+    <a href="https://github.com/tznsec/gitools">github.com/tznsec/gitools</a> ·
+    <a href="https://github.com/tznsec/gitools/wiki">wiki</a> ·
+    <a href="https://github.com/tznsec/gitools/releases">wydania</a> ·
+    autor: <a href="https://github.com/tznsec">tznsec</a>
+  </p>
+  <p class="lic">gitools 0.2.0 · MIT · kod, zrzuty i strona wygenerowane z tego samego źródła co program</p>
+</footer>
 
-        <pre><code>git clone https://github.com/tznsec/gitools.git
-cd gitools
-cargo build --release        # -&gt; target/release/gitools.exe
-cargo test
-
-# instalator (potrzebny już zbudowany gitools.exe)
-powershell -ExecutionPolicy Bypass -File installer\build.ps1</code></pre>
-      </section>
-
-      <footer>
-        <p>
-          <a href="https://github.com/tznsec/gitools">github.com/tznsec/gitools</a> ·
-          <a href="https://github.com/tznsec/gitools/blob/main/LICENSE">MIT</a> ·
-          Autor: <a href="https://github.com/tznsec">tznsec</a>
-        </p>
-      </footer>
-    </div>
-  </body>
+</body>
 </html>

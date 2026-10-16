@@ -23,7 +23,12 @@ const APP_JS: &str = include_str!("../ui/app.js");
 const I18N_JS: &str = include_str!("../ui/i18n.js");
 const STYLES_CSS: &str = include_str!("../ui/styles.css");
 
-pub fn run() {
+pub fn run(start_tab: Option<String>) {
+    START_TAB
+        .set(start_tab)
+        .ok()
+        .expect("run() wywoływane jest raz");
+
     let event_loop = EventLoop::<()>::new();
 
     // Nie wychodzimy poza ekran - inaczej dolny pasek z przyciskiem jest niedostępny.
@@ -136,6 +141,9 @@ fn default_icon() -> tao::window::Icon {
 /// Okno główne - trzymane globalnie, żeby `dispatch` mógł zmienić tytuł
 /// okna po przełączeniu języka interfejsu.
 static WINDOW: OnceLock<tao::window::Window> = OnceLock::new();
+
+/// Zakładka wybrana w wierszu poleceń (`--tab github`).
+static START_TAB: OnceLock<Option<String>> = OnceLock::new();
 
 fn ok(id: Value, data: Value) -> String {
     json!({ "id": id, "ok": true, "data": data }).to_string()
@@ -594,6 +602,11 @@ fn bootstrap(id: Value) -> String {
             "snapshotDir": snapshot::snapshot_dir().to_string_lossy(),
             "userTemplateDir": user_templates::user_template_dir().to_string_lossy(),
             "home": fsutil::home_dir().to_string_lossy(),
+            "startTab": START_TAB
+                .get()
+                .cloned()
+                .flatten()
+                .unwrap_or_else(|| "templates".to_string()),
             "cwd": std::env::current_dir()
                 .map(|p| p.to_string_lossy().to_string())
                 .unwrap_or_else(|_| ".".to_string()),

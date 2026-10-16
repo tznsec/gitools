@@ -186,6 +186,10 @@ input {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  /* Domyślne `min-width: auto` pozwala elementowi rozpychać kolumnę siatki
+     o najszersze dziecko, przez co karty wychodziły za prawą krawędź okna.
+     `0` pozwala ścisnąć kolumnę do szerokości okna. */
+  min-width: 0;
 }
 
 .actionbar {
@@ -2100,6 +2104,8 @@ kbd {
   flex-direction: column;
   gap: 18px;
   animation: fade-in 320ms var(--ease) both;
+  /* j.w. — bez tego szeroka karta rozpycha całą kolumnę */
+  min-width: 0;
 }
 
 .hero--compact .hero__icon {

@@ -31,3 +31,5 @@ Desktop.ini
 
 # logi
 *.log
+# lokalna kopia wiki (publikowana na .wiki.git, nie w kodzie)
+/wiki/

@@ -1,0 +1,447 @@
+/* ============================================================== splash ==== */
+
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  transition: opacity .55s var(--ease), visibility .55s;
+}
+
+.splash[hidden] {
+  display: none;
+}
+
+.splash.is-done {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.splash__inner {
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+  text-align: center;
+}
+
+.splash__logo {
+  width: 96px;
+  height: 96px;
+  filter: drop-shadow(0 14px 44px rgba(139, 92, 246, .45));
+  animation: splash-pop .7s var(--ease-back) both;
+}
+
+/* Key rysowany „od zera" — dlatego animujemy obrys, nie skalę. */
+.splash__logo path,
+.splash__logo circle {
+  stroke-dasharray: var(--len, 400);
+  stroke-dashoffset: var(--len, 400);
+  animation: draw .95s var(--ease) forwards;
+}
+
+.splash__logo path:nth-child(2) { animation-delay: .45s; }
+.splash__logo path:nth-child(3) { animation-delay: .55s; }
+.splash__logo path:nth-child(4) { animation-delay: .65s; }
+.splash__logo path:nth-child(5) { animation-delay: .75s; }
+.splash__logo path:nth-child(6) { animation-delay: .85s; }
+
+.splash__name {
+  display: flex;
+  gap: 1px;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -.03em;
+}
+
+.splash__name span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(14px) rotate(6deg);
+  animation: letter-in .5s var(--ease-back) forwards;
+  background: linear-gradient(100deg, var(--c1), var(--c2) 45%, var(--c3));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.splash__tag {
+  color: var(--dim);
+  font-size: 13px;
+  letter-spacing: .04em;
+  opacity: 0;
+  animation: fade-up .6s var(--ease) .95s forwards;
+}
+
+.splash__bar {
+  width: 168px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  overflow: hidden;
+  opacity: 0;
+  animation: fade-up .5s var(--ease) 1.05s forwards;
+}
+
+.splash__bar i {
+  display: block;
+  height: 100%;
+  width: 40%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--c1), var(--c3));
+  animation: sweep 1.05s var(--ease) infinite;
+}
+
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes splash-pop {
+  from { opacity: 0; transform: scale(.72); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes letter-in {
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes sweep {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(260%); }
+}
+
+/* ======================================================== pasek postępu ==== */
+
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  z-index: 60;
+  background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3));
+  box-shadow: 0 0 14px rgba(139, 92, 246, .8);
+}
+
+/* ========================================================== parallax aurora = */
+
+.aurora {
+  transform: translate3d(0, var(--par, 0px), 0);
+  transition: transform .1s linear;
+}
+
+/* ================================================================ reveal ==== */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity .7s var(--ease),
+    transform .7s var(--ease);
+  transition-delay: var(--d, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Nagłówek odjeżdża w górę i lekko się pochyla. */
+.reveal--head {
+  transform: translateY(34px) scale(.985);
+}
+
+/* ================================================================ karty ==== */
+
+/* Poświata podążająca za kursorem — dwa gradienty na pseudo-elementach. */
+.card,
+.tpl,
+.dl__item,
+.shot {
+  position: relative;
+  isolation: isolate;
+}
+
+.card::before,
+.tpl::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 0%),
+    rgba(255, 255, 255, .32),
+    transparent 62%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity .3s var(--ease);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.card:hover::before,
+.tpl:hover::before {
+  opacity: 1;
+}
+
+.card,
+.tpl {
+  transform: translate3d(0, 0, 0);
+  transition: transform .28s var(--ease), border-color .28s, background-color .28s;
+}
+
+.card:hover,
+.tpl:hover {
+  transform: translate3d(0, -4px, 0);
+}
+
+/* Tilt 3D — tylko dla kart, nie dla całej sekcji. */
+.tilt {
+  transform-style: preserve-3d;
+  transition: transform .18s ease-out;
+}
+
+/* ============================================================= przyciski ==== */
+
+.btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Poświata przewijająca się po przycisku. */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .3) 50%, transparent 65%);
+  transform: translateX(-120%);
+  transition: transform .65s var(--ease);
+  pointer-events: none;
+}
+
+.btn:hover::after {
+  transform: translateX(120%);
+}
+
+.btn:active {
+  transform: translateY(0) scale(.975);
+}
+
+/* ================================================================ navbar ==== */
+
+.nav {
+  transition: background .3s, border-color .3s, box-shadow .3s;
+}
+
+.nav.is-scrolled {
+  background: rgba(11, 12, 18, .9);
+  border-bottom-color: rgba(255, 255, 255, .13);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .4);
+}
+
+/* ================================================================ hero ==== */
+
+.hero__logo {
+  animation: float-y 6s ease-in-out infinite, glow 3.4s ease-in-out infinite;
+}
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 24px 70px rgba(0, 0, 0, .55), 0 0 0 0 rgba(139, 92, 246, .5); }
+  50% { box-shadow: 0 24px 70px rgba(0, 0, 0, .55), 0 0 60px 12px rgba(139, 92, 246, .22); }
+}
+
+/* Litery h1 pojawiają się falami. */
+h1 .ch {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(.5em) rotate(4deg);
+  animation: ch-in .8s var(--ease-back) forwards;
+  animation-delay: calc(var(--i) * 55ms);
+  background: linear-gradient(100deg, var(--c1), var(--c2) 45%, var(--c3));
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation-name: ch-in, shimmer;
+  animation-duration: .8s, 6s;
+  animation-timing-function: var(--ease-back), linear;
+  animation-fill-mode: forwards, none;
+  animation-iteration-count: 1, infinite;
+}
+
+@keyframes ch-in {
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes shimmer {
+  to { background-position: 220% 0; }
+}
+
+.hero__sub,
+.hero__by,
+.hero .cta {
+  opacity: 0;
+  animation: fade-up .8s var(--ease) forwards;
+}
+
+.hero__sub { animation-delay: .5s; }
+.hero__by { animation-delay: .62s; }
+.hero .cta { animation-delay: .74s; }
+
+/* ================================================================ liczby ==== */
+
+.stat b {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================== marquee ==== */
+
+.marquee {
+  overflow: hidden;
+  padding: 26px 0;
+  border-block: 1px solid var(--line);
+  mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+
+.marquee__row {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  animation: slide 46s linear infinite;
+}
+
+.marquee:hover .marquee__row {
+  animation-play-state: paused;
+}
+
+.marquee__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--glass);
+  white-space: nowrap;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.marquee__item b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+@keyframes slide {
+  to { transform: translateX(-50%); }
+}
+
+/* ============================================================== terminal ==== */
+
+.code {
+  transition: border-color .3s, box-shadow .3s;
+}
+
+.code:hover {
+  border-color: rgba(139, 92, 246, .45);
+  box-shadow: 0 20px 60px rgba(109, 124, 255, .14);
+}
+
+.code.is-copied .code__bar button {
+  color: #8ee6b8;
+  border-color: rgba(142, 230, 184, .4);
+}
+
+.code pre .cur {
+  display: inline-block;
+  width: 8px;
+  height: 1.05em;
+  vertical-align: text-bottom;
+  background: var(--c2);
+  animation: blink 1.05s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* ================================================================ kursor ==== */
+
+.cursor-glow {
+  position: fixed;
+  z-index: 5;
+  width: 340px;
+  height: 340px;
+  margin: -170px 0 0 -170px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(139, 92, 246, .16), transparent 62%);
+  opacity: 0;
+  transition: opacity .3s;
+  will-change: transform;
+}
+
+body.has-pointer .cursor-glow {
+  opacity: 1;
+}
+
+/* ============================================================== FAQ / link = */
+
+details {
+  transition: border-color .25s, background-color .25s;
+}
+
+details[open] {
+  border-color: rgba(139, 92, 246, .35);
+}
+
+summary {
+  transition: color .2s, padding-left .2s;
+}
+
+summary:hover {
+  padding-left: 26px;
+  color: var(--c1);
+}
+
+footer a {
+  transition: color .2s;
+}
+
+footer a:hover {
+  color: var(--c1);
+}
+
+/* ========================================================== dostępność ==== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .cursor-glow {
+    display: none;
+  }
+}
